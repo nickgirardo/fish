@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>A Very Hard Game</title>
+    <style>
+html {
+    height: 100%;
+}
+
+body {
+    height: min-content;
+}
+
+canvas {
+    display: block;
+
+    border: 0;
+    padding: 0;
+    margin: 0 auto;
+
+    background-color: black;
+}
+
+.mobileinputcontainer {
+    position:absolute;
+    display: block;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#loading #loading-label,
+#error #error-label {
+    font-weight: bold;
+    width: max-content;
+    margin: 0 auto;
+}
+
+#loader {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    margin: 1rem auto;
+
+    width: 512px;
+    height: 1rem;
+
+    background-color: #bababa;
+}
+
+#loader::after {
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    animation: animloader 3s linear infinite;
+
+    width: 128px;
+    height: 1rem;
+
+    background-color: #32323a;
+}
+
+@keyframes animloader {
+    0% {
+        left: 0;
+        transform: translateX(-100%);
+    }
+    100% {
+        left: 100%;
+        transform: translateX(0%);
+    }
+}
+
+
+#error {
+    color: red;
+}
+
+@media only screen and (orientation:landscape) {
+    .mobileinputcontainer {
+        display: none;
+    }
+
+    html {
+        background-color: #fafafa;
+    }
+
+    body {
+        margin: 2rem;
+    }
+
+    .description {
+        max-width: 120ch;
+        margin: 0 auto;
+    }
+
+    canvas {
+        width: 512px;
+        height: 512px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html {
+            background-color: #32323a;
+            color: #eee;
+        }
+
+        a {
+            color: #e89908;
+        }
+
+
+        #loader {
+            background-color: #d9d9d9;
+        }
+
+        #loader::after {
+            background-color: #eee;
+        }
+    }
+}
+
+@media only screen and (orientation:portrait) {
+    .mobileinput {
+        width: 100%;
+    }
+
+    canvas {
+        width: 100%;
+    }
+
+    html {
+        background-color: #bfbfbf;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    .landscapeOnly {
+        display:none;
+    }
+
+    #loading-label {
+        font-size: 36pt;
+    }
+
+    #loader {
+        width: 100%;
+        height: 2rem;
+    }
+
+    #loader::after {
+        width: 25%;
+        height: 2rem;
+
+        background-color: #929292;
+    }
+}
+
+    </style>
+  </head>
+  <body>
+    <div id="loading">
+         <div id="loading-label">Loading Assets…</div>
+         <span id="loader"></span>
+    </div>
+    <div id="error" hidden>
+         <div id="error-label">Something went wrong!</div>
+    </div>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 width="512" height="512"></canvas>
+
+    <div class="landscapeOnly">
+        <div class="description">
+            <h2>A Very Hard Game</h2>
+            <h3>Controls</h3>
+            <ul>
+                <li>Arrow Keys = Directional Buttons</li>
+                <li>Enter = Start</li>
+                <li>Z, X, C = A, B, C</li>
+                <li>J, K, L = alternative A, B, C</li>
+                <li>R = Reset</li>
+                <li>M = Toggle Mute</li>
+                <li>F11 = Toggle Fullscreen</li>
+            </ul>
+
+            <h3>About</h3>
+            <p>
+            "A Very Hard Game" is a game made by <a href="https://nickgirardo.com/">Nick Girardo</a> for the <a href="https://gametank.zone">GameTank</a>.  The source is available <a href="https://github.com/nickgirardo/gt-a-very-hard-game">here</a>.  It's inspired by an old flash game <a href="https://www.coolmathgames.com/0-worlds-hardest-game">Worlds Hardest Game</a>.
+            </p>
+            <p>
+            The music was written by Blackfish and is available under the license CC BY-SA. Clyde Shaffer (the designer of the GameTank) was a tremendous help during development. I'd like to thank as well the many people who playtested this game during development, especially darthbeep whose feedback was particularly helpful.
+            </p>
+            <p>
+            "A Very Hard Game" can be purchased in cartridge format <a href="https://swag.gametank.zone/products/cubicle-knight-a-very-hard-game">on the GameTank store</a>.  It is on a combined cartrige along with Clyde Shaffer's <a href="https://clydeshaffer.com/builds/GameTankEmulator/wasm/?rom=cubicle.gtr">Cubicle Knight</a>.
+            </p>
+        </div>
+    </div>
+
+    <div class="mobileinputcontainer">
+      <img class="mobileinput" id="gamepad" src="static/gamepad.png"/>
+    </div>
+
+    <script type='text/javascript'>
+      var Module = {
+        preRun: [()=>{
+          addRunDependency('syncfs');
+          FS.mkdir('/idbfs');
+          try {
+            FS.mount(IDBFS, {
+            }, '/idbfs');
+            FS.syncfs(true, function (err) {
+              assert(!err);
+              removeRunDependency('syncfs');
+            });
+          } catch(e) {
+            console.error(e.message);
+          }
+        }],
+        postRun: [],
+        print: (...args) => console.log(...args),
+        printErr: (...args) => console.error(...args),
+        canvas: (() => document.getElementById('canvas'))(),
+        setStatus: (status) => {
+            if (!status.length)
+                loading.hidden = true;
+            if (status.startsWith('Exception'))
+               error.hidden = false;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function() {
+        Module.setStatus('Exception thrown, see JavaScript console');
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+
+      function checkStatus(response) {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+        }
+        return response;
+      }
+
+      Module.onRuntimeInitialized = function() {
+        var buttonGrid = [[0, 0b0000100000001000, 0, 0b0000000000100000, 0, 0b0010000000000000, 0],
+                        [0b0000001000000000, 0, 0b0000000100000000, 0, 0b0010000000000000, 0, 0b0001000000000000],
+                        [0, 0b0000010000000100, 0, 0, 0, 0b0000000000010000, 0],
+                        [0,0,0,0,0,0,0]];
+        var touchIds = [];
+        var touchedMask = 0;
+
+        gamepad.ontouchstart = function(ev) {
+          ev.preventDefault();
+          var inputscale = 4 / ev.targetTouches[0].target.clientHeight;
+          for(var i = 0; i < ev.targetTouches.length; i++) {
+            var top = 3 - Math.floor(inputscale * (document.body.clientHeight - ev.targetTouches[i].clientY));
+            var lef = Math.floor(inputscale * ev.targetTouches[i].clientX);
+            touchIds[ev.targetTouches[i].identifier] = buttonGrid[top][lef];
+            touchedMask |= buttonGrid[top][lef];
+            Module.ccall('SetButtons', null, ["int"], [touchedMask]);
+          }
+        }
+
+        gamepad.ontouchend = function(ev) {
+          ev.preventDefault();
+          for(var i = 0; i < ev.changedTouches.length; i++) {
+            touchedMask &= ~touchIds[ev.changedTouches[i].identifier];
+          }
+          Module.ccall('SetButtons', null, ["int"], [touchedMask]);
+        }
+      }
+
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

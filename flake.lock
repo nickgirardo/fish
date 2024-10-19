@@ -1,0 +1,156 @@
+{
+  "nodes": {
+    "GTFO": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1721432295,
+        "narHash": "sha256-gBxFudx0dXJnN1mBjFVZUCNE2CQdo90hQ72Fm7j2YiE=",
+        "owner": "nickgirardo",
+        "repo": "nix-GTFO",
+        "rev": "e159f175b9ef3c2698f8c81a6843fac2fd3fcef0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nickgirardo",
+        "repo": "nix-GTFO",
+        "rev": "e159f175b9ef3c2698f8c81a6843fac2fd3fcef0",
+        "type": "github"
+      }
+    },
+    "GameTankEmulator": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1724548329,
+        "narHash": "sha256-CHP78reoLzjosUa9yS73NJ0c2J6KHLmw2KaPhodeXsk=",
+        "owner": "nickgirardo",
+        "repo": "nix-GameTankEmulator",
+        "rev": "32aa921c65e9bb480da79eb4e90287f77e94a5fe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nickgirardo",
+        "repo": "nix-GameTankEmulator",
+        "rev": "32aa921c65e9bb480da79eb4e90287f77e94a5fe",
+        "type": "github"
+      }
+    },
+    "cc65": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1722992218,
+        "narHash": "sha256-AYJN2OlG2qbKOqbhi7WH859REt1h2KDXAZ+LgbWDuqc=",
+        "owner": "nickgirardo",
+        "repo": "nix-cc65-unstable",
+        "rev": "18b6c7417518c54bb95a2071782f2603d883edc9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nickgirardo",
+        "repo": "nix-cc65-unstable",
+        "rev": "18b6c7417518c54bb95a2071782f2603d883edc9",
+        "type": "github"
+      }
+    },
+    "gitignore": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1709087332,
+        "narHash": "sha256-HG2cCnktfHsKV0s4XW83gU3F57gaTljL9KNSuG6bnQs=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1721429417,
+        "narHash": "sha256-AJW9xfwZfYMT9sltcIxxWnbRLV0XVTo7gPHGqc7Ev+4=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "74435c9234c751e6786c5f3fd34ff6b0f0c13bd1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "release-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1721162132,
+        "narHash": "sha256-kH2unTqd/LlqG1NGbuUlRkDmXwCf80PNLNCjO3acQqI=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "265595f550a572703d10a9db94a9ded793f21dfc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "release-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1721322227,
+        "narHash": "sha256-OLCPEFVcb7x9xLPDDRd0TDMVmVhdTnhX27WGFNDrcuk=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2a57b049d44d14b3cba98746e8b66ac0bc4c2963",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "release-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1729357638,
+        "narHash": "sha256-66RHecx+zohbZwJVEPF7uuwHeqf8rykZTMCTqIrOew4=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "bb8c2cf7ea0dd2e18a52746b2c3a5b0c73b93c22",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "release-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "GTFO": "GTFO",
+        "GameTankEmulator": "GameTankEmulator",
+        "cc65": "cc65",
+        "gitignore": "gitignore",
+        "nixpkgs": "nixpkgs_4"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
