@@ -10,7 +10,6 @@
 
 #define LEVEL_COUNT 7
 
-#define MAX_SECRETS 5
 
 #define COLOR_BG 6
 
@@ -23,16 +22,9 @@
 #define TILE_WALL 0
 #define TILE_KILL 0xBB
 #define TILE_GOAL 0x14
-#define TILE_GOAL_SECRET 0xFC
 
 #define SCORE_ENTRIES 10
 #define SCORE_NAME_LENGTH 10
-
-typedef enum {
-  ModeGame,
-  ModeCredits,
-  ModeScores,
-} MajorMode;
 
 typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 
@@ -49,12 +41,6 @@ typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
   ((X > L) && (X < R) && (Y > U) && (Y < D))
 
 typedef enum {
-  MenuPlay,
-  MenuScores,
-  MenuCredits
-} MenuOption;
-
-typedef enum {
   ResultOk = 0,
   ResultFail,
   ResultWin,
@@ -64,9 +50,7 @@ typedef enum {
 
 typedef struct LevelDataT {
   const unsigned char *tilemap;
-  const unsigned char *tilemap_decor;
   const unsigned char *entities;
-  const unsigned char *reset_data;
   const char *name;
 } LevelData;
 
@@ -83,13 +67,6 @@ typedef union CoordU {
 typedef enum {
   EntityEmpty = 0,
   EntityPlayer,
-  EntityHBlockGroup,
-  EntityLoopBoy,
-  EntityBoxPatrol,
-  EntitySecret,
-  EntityMenu,
-  EntitySecretReward,
-  EntityScoreEntry,
 } EntityKind;
 
 typedef struct PlayerDataT {
@@ -102,51 +79,6 @@ typedef struct PlayerDataT {
   unsigned char d;
 } PlayerData;
 
-typedef struct HBlockGroupDataT {
-  Coord x;
-  Coord y;
-  unsigned short vel;
-  char n;
-  char d_total;
-  char d_remaining;
-} HBlockGroupData;
-
-
-typedef struct LoopBoyDataT {
-  Coord x;
-  Coord y;
-  char n;
-  char d;
-  char direction;
-} LoopBoyData;
-
-typedef struct BoxPatrolDataT {
-  Coord x;
-  Coord y;
-  char w;
-  char h;
-  char dir;
-  char offset;
-} BoxPatrolData;
-
-typedef struct SecretDataT {
-  char x;
-  char y;
-  bool collected;
-} SecretData;
-
-typedef struct SecretRewardDataT {
-  char x;
-  char y;
-  bool visited;
-} SecretRewardData;
-
-typedef struct MenuDataT {
-  MenuOption selection;
-  char blink_timer;
-  bool completed;
-} MenuData;
-
 typedef struct ScoreEntryDataT {
   unsigned short score;
   unsigned char cursor;
@@ -155,30 +87,13 @@ typedef struct ScoreEntryDataT {
 
 typedef union EntityDataU {
   PlayerData pd;
-  HBlockGroupData hbgd;
-  LoopBoyData lbd;
-  SecretData sd;
-  SecretRewardData srd;
-  ScoreEntryData sed;
 } EntityData;
 
-typedef struct ScoreEntryT {
-  unsigned short score;
-  char name[SCORE_NAME_LENGTH];
-} ScoreEntry;
-
-extern MajorMode major_mode;
 extern EntityKind entities[ENTITY_TABLE_SIZE];
 extern PlayerData *player_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
 extern unsigned char tilemap[TILEMAP_SIZE];
 extern unsigned char tilemap_decor[64];
 extern void init_game();
-extern void reset_level();
-
-extern ScoreEntry normal_scores[SCORE_ENTRIES];
-extern ScoreEntry secret_scores[SCORE_ENTRIES];
-
-extern unsigned char secrets_collected;
 
 #endif // COMMON_H_

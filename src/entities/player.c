@@ -60,7 +60,7 @@ void draw_player(char ix) {
   wait();
 }
 
-CollisionResult update_player(char ix) {
+void update_player(char ix) {
   PlayerData *data;
 
   data = (PlayerData *) &entity_data[ix];
@@ -102,13 +102,13 @@ CollisionResult update_player(char ix) {
         break;
 
       case TILE_KILL:
-        return ResultFail;
+        return;
 
       case TILE_GOAL:
-        return ResultWin;
+        return;
 
       case TILE_GOAL_SECRET:
-        return ResultSecretWin;
+        return;
 
       default:
         tileB = tilemap[tx + ((ty + 1) << 4)];
@@ -122,13 +122,13 @@ CollisionResult update_player(char ix) {
             break;
 
           case TILE_KILL:
-            return ResultFail;
+            return;
 
           case TILE_GOAL:
-            return ResultWin;
+            return;
 
           case TILE_GOAL_SECRET:
-            return ResultSecretWin;
+            return;
 
           default: break;
         }
@@ -149,13 +149,13 @@ CollisionResult update_player(char ix) {
         break;
 
       case TILE_KILL:
-        return ResultFail;
+        return;
 
       case TILE_GOAL:
-        return ResultWin;
+        return;
 
       case TILE_GOAL_SECRET:
-        return ResultSecretWin;
+        return;
 
       default:
         tileB = tilemap[tx + ((ty + 1) << 4)];
@@ -169,13 +169,13 @@ CollisionResult update_player(char ix) {
             break;
 
           case TILE_KILL:
-            return ResultFail;
+            return;
 
           case TILE_GOAL:
-            return ResultWin;
+            return;
 
           case TILE_GOAL_SECRET:
-            return ResultSecretWin;
+            return;
 
           default: break;
         }
@@ -198,13 +198,13 @@ CollisionResult update_player(char ix) {
         break;
 
       case TILE_KILL:
-        return ResultFail;
+        return;
 
       case TILE_GOAL:
-        return ResultWin;
+        return;
 
       case TILE_GOAL_SECRET:
-        return ResultSecretWin;
+        return;
 
       default:
         tileB = tilemap[(tx + 1) + (ty  << 4)];
@@ -218,13 +218,13 @@ CollisionResult update_player(char ix) {
             break;
 
           case TILE_KILL:
-            return ResultFail;
+            return;
 
           case TILE_GOAL:
-            return ResultWin;
+            return;
 
           case TILE_GOAL_SECRET:
-            return ResultSecretWin;
+            return;
 
           default: break;
         }
@@ -245,13 +245,13 @@ CollisionResult update_player(char ix) {
         break;
 
       case TILE_KILL:
-        return ResultFail;
+        return;
 
       case TILE_GOAL:
-        return ResultWin;
+        return;
 
       case TILE_GOAL_SECRET:
-        return ResultSecretWin;
+        return;
 
       default:
         tileB = tilemap[(tx + 1) + (ty << 4)];
@@ -265,13 +265,13 @@ CollisionResult update_player(char ix) {
             break;
 
           case TILE_KILL:
-            return ResultFail;
+            return;
 
           case TILE_GOAL:
-            return ResultWin;
+            return;
 
           case TILE_GOAL_SECRET:
-            return ResultSecretWin;
+            return;
 
           default: break;
         }
@@ -284,7 +284,7 @@ CollisionResult update_player(char ix) {
   data->r = data->x.hl.h + PLAYER_SIZE;
   data->d = data->y.hl.h + PLAYER_SIZE;
 
-  return ResultOk;
+  return;
 }
 
 #pragma code-name (pop)
