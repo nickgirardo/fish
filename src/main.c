@@ -8,6 +8,7 @@
 
 #include "common.h"
 
+#include "camera.h"
 #include "tilemap.h"
 
 #include "entities/player.h"
@@ -20,7 +21,7 @@
 EntityKind entities[ENTITY_TABLE_SIZE];
 PlayerData *player_data;
 EntityData entity_data[ENTITY_TABLE_SIZE];
-unsigned char tilemap[TILEMAP_SIZE];
+unsigned char tilemap[MAX_TILEMAP_SIZE];
 unsigned char tilemap_decor[64];
 
 unsigned char current_level;
@@ -52,13 +53,12 @@ void init_entities(const unsigned char *data) {
   while(*data != EntityEmpty) {
     switch (*data) {
       case EntityPlayer:
-	nop5();
         init_player(*(++data), *(++data));
         break;
       default:
         // We shouldn't ever hit this branch if our levels are crafted correctly
         // Just hard-lock
-        while (1) {}
+        while (1) {nop10();}
     }
     data++;
   }
@@ -77,7 +77,10 @@ void init_level() {
   LevelData l;
   l = levels[current_level];
 
-  init_tilemap(l.tilemap);
+  init_camera();
+
+  // TODO obv don't hardcode this
+  init_tilemap(512, l.tilemap);
 
   init_entities(l.entities);
 }
@@ -128,24 +131,42 @@ int main() {
 
   init_game();
 
+  // TODO rm
+  // Just so the flashing doesn't kill me while testing drawing code
+  clear_border(0);
+  await_draw_queue();
+  clear_screen(0);
+  await_draw_queue();
+  flip_pages();
+  clear_border(0);
+  await_draw_queue();
+  clear_screen(0);
+  await_draw_queue();
+
   // Run forever
   while (1) {
+    PROFILER_START(0);
     tick_music();
 
     update_inputs();
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
-      nop10();
 	update_fns[entities[i]](i);
     }
 
+    update_camera();
+
+    PROFILER_START(1);
     draw_tilemap();
+    PROFILER_END(1);
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
 	drawing_fns[entities[i]](i);
     }
 
     await_draw_queue();
+    PROFILER_END(0);
+
     sleep(1);
     flip_pages();
   }

@@ -10,18 +10,20 @@
 
 #define LEVEL_COUNT 7
 
-
 #define COLOR_BG 6
 
 // Tilemap related definitions
 #define TILE_SIZE 8
+
+// TODO tilemap width and height aren't going to be fixed as they were in avhg
 #define TILEMAP_WIDTH 16
 #define TILEMAP_HEIGHT 16
 #define TILEMAP_SIZE (TILEMAP_HEIGHT * TILEMAP_WIDTH)
 
+// TODO just setting a fairly large max for now
+#define MAX_TILEMAP_SIZE 2048
+
 #define TILE_WALL 0
-#define TILE_KILL 0xBB
-#define TILE_GOAL 0x14
 
 #define SCORE_ENTRIES 10
 #define SCORE_NAME_LENGTH 10
@@ -92,7 +94,7 @@ typedef union EntityDataU {
 extern EntityKind entities[ENTITY_TABLE_SIZE];
 extern PlayerData *player_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
-extern unsigned char tilemap[TILEMAP_SIZE];
+extern unsigned char tilemap[MAX_TILEMAP_SIZE];
 extern unsigned char tilemap_decor[64];
 extern void init_game();
 

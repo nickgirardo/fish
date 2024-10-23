@@ -4,6 +4,11 @@
 
 #pragma code-name (push, "PROG0")
 
+// TODO rm, just putting these here for now
+#define TILE_GOAL_SECRET 0x13
+#define TILE_GOAL 0x14
+#define TILE_KILL 0xBB
+
 void init_player(char x, char y) {
   PlayerData *data;
   char i;
@@ -88,6 +93,14 @@ void update_player(char ix) {
   data->vx.c -= data->vx.c >> PLAYER_FRICTION_COEFF;
   data->vy.c -= data->vy.c >> PLAYER_FRICTION_COEFF;
 
+  data->x.c += data->vx.c;
+  data->y.c += data->vy.c;
+
+  data->r = data->x.hl.h + PLAYER_SIZE;
+  data->d = data->y.hl.h + PLAYER_SIZE;
+
+  return;
+  
   // TILEMAP COLLISIONS
   // Are wrossing a tile boundry on the right?
   if (data->vx.c > 0 && (data->x.hl.h & (TILE_SIZE - 1)) == (TILE_SIZE - PLAYER_SIZE)) {
