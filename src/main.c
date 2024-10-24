@@ -161,7 +161,7 @@ int main() {
     PROFILER_END(1);
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
-	drawing_fns[entities[i]](i);
+      //drawing_fns[entities[i]](i);
     }
 
     await_draw_queue();

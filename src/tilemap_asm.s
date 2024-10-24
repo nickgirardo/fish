@@ -1,5 +1,5 @@
 .export _draw_tilemap_real
-.importzp sp, tmp1, tmp2, tmp3
+.importzp sp, tmp1, tmp2, tmp3, ptr1
 .import incsp2, _queue_end, _queue_count, pushax
 .import _tilemap
 
@@ -17,6 +17,8 @@ vram_START = $4006
 tile_size = $08
 tilemap_width = $20
 
+tilemap_data_ptr = $20
+
 .segment	"DATA"
 
 .proc	_draw_tilemap_real: near
@@ -32,8 +34,16 @@ tilemap_width = $20
 	;; Put the argument to the function in the y register
 	tay
 
+	lda #<_tilemap
+	sta ptr1
+	lda #>_tilemap
+	sta ptr1+1
+
+	
 	;; Always start from y pos 0
-	stz tmp2		; The current y position
+	lda #tile_size
+	sta tmp2		; The current y position
+	tya
 
 	;; Calculate start x
 	;; This determines how many pixels within a tile each tile should be adjusted by
@@ -49,9 +59,6 @@ tilemap_width = $20
 	;; This writes into the argument of a ldx instruction
 	;; This value is reused every time a new row is started
 	sta RowStartingXPosParam+1
-
-	clc
-	adc #$10
 
 	;; Retrieve the argument from the y register
 	;; The y register can now be used for other purposes
@@ -78,8 +85,9 @@ tilemap_width = $20
 	;; The GX and GY registers are for textured draws and will remain 0 for this procedure (for now)
 	stz vram_GX
 	stz vram_GY
-	;; Zero Y for the first draw
-	stz vram_VY
+	;; Y for the first draw
+	lda tmp2
+	sta vram_VY
 	;; The width and height are set to `tile_size` for all draw calls
 	lda #tile_size
 	sta vram_WIDTH
@@ -103,7 +111,7 @@ StartOfRow:
 
 	;; Each time we finish a row, check if we've drawn enough tiles
 	lda tmp2
-	cmp #$80-tile_size
+	cmp #$80-tile_size-tile_size
 	bpl End
 
 	;; Increment the current y pos by `tile_size`
@@ -112,11 +120,8 @@ StartOfRow:
 	sta tmp2
 	sta vram_VY
 
-StartFirstDraw:
 	;; Reset x to the starting x position for each row
 	;; The $00 here is modified above to be the correct value
-RowStartingXPosParam:
-	ldx #$00
 
 	;; The index into the tilemap
 	;; The $00 here is modified above to be the correct value
@@ -125,10 +130,18 @@ RowStartingXPosParam:
 	;; Increment the tilemap starting index by 32 pixels
 	;; This is the width of a single row of tiles
 	adc #tilemap_width
+	tay
 	;; Store the newly calculated value into the last location
 	sta tmp1
-	tay
+	;; If we've set our carry flag, this will increment the pointer
+	lda ptr1+1
+	adc #$00
+	sta ptr1+1
+	
 
+StartFirstDraw:
+RowStartingXPosParam:
+	ldx #$00
 DrawTile:
 	;; Set our x pos
 	stx vram_VX
@@ -138,7 +151,7 @@ DrawTile:
 	adc #tile_size
 	tax
 
-	lda _tilemap,y
+	lda (ptr1),y
 	sta vram_COLOR
 	iny
 
