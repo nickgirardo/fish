@@ -1,8 +1,9 @@
 .export _draw_tilemap_real
 .importzp sp, tmp1, tmp2, tmp3, ptr1
-.import incsp2, _queue_end, _queue_count, pushax
+.import incsp2, pushax
 .import _tilemap
 
+;; TODO we currently aren't using these flags here
 DMA_flags = $2007
 
 vram_VX = $4000
@@ -77,11 +78,6 @@ tilemap_data_ptr = $20
 
 	tay
 	sta tmp1
-
-	;; Prep the dma flags
-	;; TODO this value might be wrong, it's copied from the value given by the C code
-	lda #$dd
-	sta DMA_flags
 
 	;; Set initial VRAM values
 	;; The GX and GY registers are for textured draws and will remain 0 for this procedure (for now)
