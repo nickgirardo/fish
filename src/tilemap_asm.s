@@ -34,6 +34,7 @@ tilemap_data_ptr = $20
 	;; Put the argument to the function in the y register
 	tay
 
+	;; Copy the pointer from _tilemap into tmp1 so we can safely mutate it (ptr1 that is)
 	lda #<_tilemap
 	sta ptr1
 	lda #>_tilemap
@@ -74,6 +75,7 @@ tilemap_data_ptr = $20
 
 	adc #1
 
+	tay
 	sta tmp1
 
 	;; Prep the dma flags
@@ -111,7 +113,7 @@ StartOfRow:
 
 	;; Each time we finish a row, check if we've drawn enough tiles
 	lda tmp2
-	cmp #$80-tile_size-tile_size
+	cmp #$80-tile_size
 	bpl End
 
 	;; Increment the current y pos by `tile_size`
@@ -120,11 +122,8 @@ StartOfRow:
 	sta tmp2
 	sta vram_VY
 
-	;; Reset x to the starting x position for each row
-	;; The $00 here is modified above to be the correct value
-
-	;; The index into the tilemap
-	;; The $00 here is modified above to be the correct value
+	;; The index into the tilemap to be reset at the start of a row
+	;; This value lives in y during the row
 	lda tmp1
 
 	;; Increment the tilemap starting index by 32 pixels
@@ -140,6 +139,8 @@ StartOfRow:
 	
 
 StartFirstDraw:
+	;; Reset x to the starting x position for each row
+	;; The $00 here is modified above to be the correct value
 RowStartingXPosParam:
 	ldx #$00
 DrawTile:
