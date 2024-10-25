@@ -232,11 +232,37 @@ void await_drawing() {
     }
 }
 
+#define BORDER_SIZE 8
+
 void clear_border(char c) {
-    draw_box(0, 0, SCREEN_WIDTH-1, 7, c);
-    draw_box(0, 7, 1, SCREEN_HEIGHT-7, c);
-    draw_box(1, SCREEN_HEIGHT-8, SCREEN_WIDTH-1, 8, c);
-    draw_box(SCREEN_WIDTH-1, 0, 1, SCREEN_HEIGHT-8, c);
+    draw_box(
+	     0,
+	     0,
+	     SCREEN_WIDTH-BORDER_SIZE,
+	     BORDER_SIZE,
+	     c
+    );
+    draw_box(
+	     0,
+	     BORDER_SIZE,
+	     BORDER_SIZE,
+	     SCREEN_HEIGHT-BORDER_SIZE,
+	     c
+    );
+    draw_box(
+	     BORDER_SIZE,
+	     SCREEN_HEIGHT-BORDER_SIZE,
+	     SCREEN_WIDTH-BORDER_SIZE,
+	     BORDER_SIZE,
+	     c
+    );
+    draw_box(
+	     SCREEN_WIDTH-BORDER_SIZE,
+	     0,
+	     BORDER_SIZE,
+	     SCREEN_HEIGHT-BORDER_SIZE,
+	     c
+    );
 }
 
 void clear_screen(char c) {
