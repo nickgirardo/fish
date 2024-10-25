@@ -1,7 +1,7 @@
 .export _draw_tilemap_real
 .importzp sp, tmp1, tmp2, ptr1, ptr2
 .import incsp2, pushax
-.import _camera_scroll, _level_test_x_plane, _level_test_y_plane
+.import _level_test_x_plane, _level_test_y_plane
 
 ;; TODO we currently aren't using these flags here
 DMA_flags = $2007

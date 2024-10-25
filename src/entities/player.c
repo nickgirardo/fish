@@ -8,6 +8,7 @@
 #define TILE_KILL 0xBB
 
 void init_player(char x, char y) {
+  EntityData *p;
   PlayerData *data;
   char i;
 
@@ -15,12 +16,13 @@ void init_player(char x, char y) {
     if (entities[i] == EntityEmpty) {
       entities[i] = EntityPlayer;
 
-      data = (PlayerData *) &entity_data[i];
+      p = (EntityData *) &entity_data[i];
+      data = (PlayerData *) &p->data.pd;
 
-      data->x.hl.h = x;
-      data->x.hl.l = 0;
-      data->y.hl.h = y;
-      data->y.hl.l = 0;
+      p->x.hl.h = x;
+      p->x.hl.l = 0;
+      p->y.hl.h = y;
+      p->y.hl.l = 0;
       data->vx.c = 0;
       data->vy.c = 0;
 
@@ -36,24 +38,14 @@ void init_player(char x, char y) {
   // This should never be reached!!
 }
 
-void reset_player(char x, char y) {
-  player_data->x.hl.h = x;
-  player_data->x.hl.l = 0;
-  player_data->y.hl.h = y;
-  player_data->y.hl.l = 0;
-
-  player_data->r = x + PLAYER_SIZE;
-  player_data->d = y + PLAYER_SIZE;
-}
-
 void draw_player(char ix) {
-  PlayerData data;
+  EntityData p;
 
-  data = *((PlayerData *) &entity_data[ix]);
+  p = entity_data[ix];
 
   *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
-  vram[VX] = data.x.hl.h;
-  vram[VY] = data.y.hl.h;
+  vram[VX] = p.x.hl.h;
+  vram[VY] = p.y.hl.h;
   vram[GX] = 0;
   vram[GY] = 0;
   vram[WIDTH] = PLAYER_SIZE;
@@ -64,9 +56,11 @@ void draw_player(char ix) {
 }
 
 void update_player(char ix) {
+  EntityData *p;
   PlayerData *data;
 
-  data = (PlayerData *) &entity_data[ix];
+  p = (EntityData *) &entity_data[ix];
+  data = &p->data.pd;
 
   if (player1_buttons & INPUT_MASK_RIGHT) {
     data->vx.c += PLAYER_ACCEL;
@@ -91,21 +85,22 @@ void update_player(char ix) {
   data->vx.c -= data->vx.c >> PLAYER_FRICTION_COEFF;
   data->vy.c -= data->vy.c >> PLAYER_FRICTION_COEFF;
 
-  data->x.c += data->vx.c;
-  data->y.c += data->vy.c;
+  p->x.c += data->vx.c;
+  p->y.c += data->vy.c;
 
+  camera_req_scroll = 0;
   // Should we scroll the camera?
-  if (data->vx.c > 0 && data->x.hl.h > CAMERA_SCROLL_START_RIGHT) {
+  if (data->vx.c > 0 && p->x.hl.h > CAMERA_SCROLL_START_RIGHT) {
     camera_req_scroll = 1;
   }
 
-  if (data->vx.c < 0 && data->x.hl.h < CAMERA_SCROLL_START_LEFT) {
+  if (data->vx.c < 0 && p->x.hl.h < CAMERA_SCROLL_START_LEFT) {
     camera_req_scroll = -1;
   }
 
   // TODO do we still want to cache these values
-  data->r = data->x.hl.h + PLAYER_SIZE;
-  data->d = data->y.hl.h + PLAYER_SIZE;
+  data->r = p->x.hl.h + PLAYER_SIZE;
+  data->d = p->y.hl.h + PLAYER_SIZE;
 }
 
 #pragma code-name (pop)

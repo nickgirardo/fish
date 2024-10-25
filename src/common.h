@@ -72,8 +72,6 @@ typedef enum {
 } EntityKind;
 
 typedef struct PlayerDataT {
-  Coord x;
-  Coord y;
   Coord vx;
   Coord vy;
   // Caching these values for faster collision detection
@@ -87,8 +85,14 @@ typedef struct ScoreEntryDataT {
   char entry[SCORE_NAME_LENGTH];
 } ScoreEntryData;
 
-typedef union EntityDataU {
+typedef union EntityInnerDataU {
   PlayerData pd;
+} EntityInnerData;
+
+typedef struct EntityDataT {
+  Coord x;
+  Coord y;
+  EntityInnerData data;
 } EntityData;
 
 extern EntityKind entities[ENTITY_TABLE_SIZE];

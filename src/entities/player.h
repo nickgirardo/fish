@@ -12,13 +12,12 @@
 #define PLAYER_MIN_V 0x0030
 #define PLAYER_MIN_V_NEG -0x0030
 #define PLAYER_FRICTION_COEFF 3
-#define PLAYER_SIZE 6
+#define PLAYER_SIZE 12
 
 #define CAMERA_SCROLL_START_LEFT  0x28
 #define CAMERA_SCROLL_START_RIGHT 0x50
 
 void init_player(char x, char y);
-void reset_player(char x, char y);
 void draw_player(char ix);
 void update_player(char ix);
 

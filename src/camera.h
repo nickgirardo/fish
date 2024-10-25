@@ -6,7 +6,7 @@
 void init_camera();
 void update_camera();
 
-char camera_scroll;
-char camera_req_scroll;
+extern char camera_scroll;
+extern signed char camera_req_scroll;
 
 #endif
