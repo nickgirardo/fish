@@ -110,8 +110,6 @@ typedef struct EntityDataT {
 extern EntityKind entities[ENTITY_TABLE_SIZE];
 extern PlayerData *player_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
-extern unsigned char tilemap[MAX_TILEMAP_SIZE];
-extern unsigned char tilemap_decor[64];
 extern void init_game();
 
 #endif // COMMON_H_

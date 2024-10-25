@@ -13,4 +13,6 @@
 void init_tilemap(unsigned short map_size, const unsigned char *map);
 void draw_tilemap();
 
+extern char *tilemap;
+
 #endif // TILEMAP_H_

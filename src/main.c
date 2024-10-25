@@ -22,8 +22,6 @@
 EntityKind entities[ENTITY_TABLE_SIZE];
 PlayerData *player_data;
 EntityData entity_data[ENTITY_TABLE_SIZE];
-unsigned char tilemap[MAX_TILEMAP_SIZE];
-unsigned char tilemap_decor[64];
 
 unsigned char current_level;
 
@@ -136,18 +134,6 @@ int main() {
   levels[0].name = level_test_name;
 
   init_game();
-
-  // TODO rm
-  // Just so the flashing doesn't kill me while testing drawing code
-  clear_border(0xFF);
-  await_draw_queue();
-  clear_screen(0);
-  await_draw_queue();
-  flip_pages();
-  clear_border(0xFF);
-  await_draw_queue();
-  clear_screen(0xFF);
-  await_draw_queue();
 
   // Run forever
   while (1) {

@@ -2,13 +2,11 @@
 
 #pragma code-name (push, "PROG0")
 
+char *tilemap;
+
 // TODO this is a big waste
 void init_tilemap(unsigned short map_size, const unsigned char *map) {
-    register unsigned short ix;
-
-    for (ix = 0; ix < map_size; ++ix) {
-        tilemap[ix] = map[ix];
-    }
+    tilemap = map;
 }
 
 void draw_tilemap_real(unsigned char);
