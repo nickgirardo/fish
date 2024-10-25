@@ -7,6 +7,7 @@
 #define TILE_GOAL 0x14
 #define TILE_KILL 0xBB
 
+
 void init_player(char x, char y) {
   EntityData *p;
   PlayerData *data;
@@ -23,8 +24,14 @@ void init_player(char x, char y) {
       p->x.hl.l = 0;
       p->y.hl.h = y;
       p->y.hl.l = 0;
+
       data->vx.c = 0;
       data->vy.c = 0;
+
+      data->facing = FACING_RIGHT;
+
+      data->stroke_boost = MAX_STROKE_BOOST;
+      data->auto_sink = 0;
 
       data->r = 0;
       data->d = 0;
@@ -62,6 +69,18 @@ void update_player(char ix) {
   p = (EntityData *) &entity_data[ix];
   data = &p->data.pd;
 
+  if (data->stroke_boost < MAX_STROKE_BOOST)
+    data->stroke_boost += STROKE_INCREMENT;
+
+  if (data->auto_sink > 0) {
+    if (data->auto_sink < AUTO_SINK_START && !(player1_buttons & INPUT_MASK_UP)) {
+      data->vy.c += AUTO_SINK_STRENGTH << 1;
+    }
+
+    data->auto_sink--;
+  }
+
+
   if (player1_buttons & INPUT_MASK_RIGHT) {
     data->vx.c += PLAYER_ACCEL;
   } else if (player1_buttons & INPUT_MASK_LEFT) {
@@ -80,6 +99,43 @@ void update_player(char ix) {
     data->vy.c = 0;
   } else if (data->vy.c < 0 && data->vy.c > PLAYER_MIN_V_NEG) {
     data->vy.c = 0;
+  }
+
+  if (data->stroke_boost > MIN_STROKE && player1_new_buttons & INPUT_MASK_B) {
+    if (player1_buttons & INPUT_MASK_RIGHT) {
+      if (player1_buttons & INPUT_MASK_DOWN) {
+	data->vx.c += ((short) data->stroke_boost) << 4;
+	data->vy.c += ((short) data->stroke_boost);
+      } else {
+	data->vx.c += ((short) data->stroke_boost) << 4;
+	data->vy.c -= ((short) data->stroke_boost) << 2;
+	data->auto_sink = AUTO_SINK_TIMER;
+      }
+    } else if (player1_buttons & INPUT_MASK_LEFT) {
+      if (player1_buttons & INPUT_MASK_DOWN) {
+	data->vx.c -= ((short) data->stroke_boost) << 4;
+	data->vy.c += ((short) data->stroke_boost);
+      } else {
+	data->vx.c -= ((short) data->stroke_boost) << 4;
+	data->vy.c -= ((short) data->stroke_boost) << 2;
+	data->auto_sink = AUTO_SINK_TIMER;
+      }
+    } else {
+      if (data->facing == FACING_RIGHT) {
+	data->vx.c += ((short) data->stroke_boost) << 2;
+      } else {
+	data->vx.c -= ((short) data->stroke_boost) << 2;
+      }
+
+      if (player1_buttons & INPUT_MASK_DOWN) {
+	data->vy.c += ((short) data->stroke_boost) << 3;
+      } else {
+	data->vy.c -= ((short) data->stroke_boost) << 4;
+	data->auto_sink = AUTO_SINK_TIMER;
+      }
+    }
+
+    data->stroke_boost = 0;
   }
 
   data->vx.c -= data->vx.c >> PLAYER_FRICTION_COEFF;

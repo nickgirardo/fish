@@ -1,7 +1,8 @@
 #include "camera.h"
 
+// TODO these should be properties of the currently loaded tilemap
 #define CAMERA_STOP_LEFT 0
-#define CAMERA_STOP_RIGHT 0x30
+#define CAMERA_STOP_RIGHT 0x80
 
 char camera_scroll;
 signed char camera_req_scroll;

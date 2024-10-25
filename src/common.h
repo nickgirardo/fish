@@ -42,6 +42,9 @@ typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 #define point_collision(X, Y, L, R, U, D) \
   ((X > L) && (X < R) && (Y > U) && (Y < D))
 
+#define FACING_RIGHT 0
+#define FACING_LEFT 1
+
 typedef enum {
   ResultOk = 0,
   ResultFail,
@@ -74,6 +77,9 @@ typedef enum {
 typedef struct PlayerDataT {
   Coord vx;
   Coord vy;
+  unsigned char facing;
+  unsigned char stroke_boost;
+  unsigned char auto_sink;
   // Caching these values for faster collision detection
   unsigned char r;
   unsigned char d;
