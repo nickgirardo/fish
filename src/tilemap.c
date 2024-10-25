@@ -18,7 +18,7 @@ unsigned char *tm_tilemap;
 void draw_tilemap() {
     PROFILER_START(5);
     *dma_flags = flagsMirror;
-    draw_tilemap_real((unsigned char) (camera_x_scroll.hl.h));
+    draw_tilemap_real((unsigned char) (camera_scroll));
     PROFILER_END(5);
 }
 

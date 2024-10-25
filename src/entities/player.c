@@ -96,11 +96,11 @@ void update_player(char ix) {
 
   // Should we scroll the camera?
   if (data->vx.c > 0 && data->x.hl.h > CAMERA_SCROLL_START_RIGHT) {
-    camera_request_x_scroll = 1;
+    camera_req_scroll = 1;
   }
 
   if (data->vx.c < 0 && data->x.hl.h < CAMERA_SCROLL_START_LEFT) {
-    camera_request_x_scroll = -1;
+    camera_req_scroll = -1;
   }
 
   // TODO do we still want to cache these values
