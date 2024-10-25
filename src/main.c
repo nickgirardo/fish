@@ -125,7 +125,6 @@ int main() {
   await_draw_queue();
 
   // Level set up
-  levels[0].tilemap = level_test;
   levels[0].entities = level_test_entities;
   levels[0].name = level_test_name;
 
@@ -133,14 +132,14 @@ int main() {
 
   // TODO rm
   // Just so the flashing doesn't kill me while testing drawing code
-  clear_border(0);
+  clear_border(0xFF);
   await_draw_queue();
   clear_screen(0);
   await_draw_queue();
   flip_pages();
-  clear_border(0);
+  clear_border(0xFF);
   await_draw_queue();
-  clear_screen(0);
+  clear_screen(0xFF);
   await_draw_queue();
 
   // Run forever
@@ -161,10 +160,11 @@ int main() {
     PROFILER_END(1);
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
-      //drawing_fns[entities[i]](i);
+      drawing_fns[entities[i]](i);
     }
 
     await_draw_queue();
+    clear_border(0xFF);
     PROFILER_END(0);
 
     sleep(1);

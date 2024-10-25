@@ -251,16 +251,16 @@ void clear_border(char c) {
     );
     draw_box(
 	     BORDER_SIZE,
-	     SCREEN_HEIGHT-BORDER_SIZE,
+	     SCREEN_HEIGHT-1,
 	     SCREEN_WIDTH-BORDER_SIZE,
-	     BORDER_SIZE,
+	     1,
 	     c
     );
     draw_box(
 	     SCREEN_WIDTH-BORDER_SIZE,
 	     0,
 	     BORDER_SIZE,
-	     SCREEN_HEIGHT-BORDER_SIZE,
+	     SCREEN_HEIGHT-1,
 	     c
     );
 }
