@@ -82,8 +82,10 @@ void update_player(char ix) {
 
 
   if (player1_buttons & INPUT_MASK_RIGHT) {
+    data->facing = FACING_RIGHT;
     data->vx.c += PLAYER_ACCEL;
   } else if (player1_buttons & INPUT_MASK_LEFT) {
+    data->facing = FACING_LEFT;
     data->vx.c -= PLAYER_ACCEL;
   } else if (data->vx.c > 0 && data->vx.c < PLAYER_MIN_V) {
     data->vx.c = 0;
