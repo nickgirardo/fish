@@ -42,6 +42,9 @@ typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 #define point_collision(X, Y, L, R, U, D) \
   ((X > L) && (X < R) && (Y > U) && (Y < D))
 
+#define FACING_RIGHT 0
+#define FACING_LEFT 1
+
 typedef enum {
   ResultOk = 0,
   ResultFail,
@@ -69,17 +72,23 @@ typedef union CoordU {
 typedef enum {
   EntityEmpty = 0,
   EntityPlayer,
+  EntityTownie,
 } EntityKind;
 
 typedef struct PlayerDataT {
-  Coord x;
-  Coord y;
   Coord vx;
   Coord vy;
+  unsigned char facing;
+  unsigned char stroke_boost;
+  unsigned char auto_sink;
   // Caching these values for faster collision detection
   unsigned char r;
   unsigned char d;
 } PlayerData;
+
+typedef struct TownieDataT {
+  Coord color;
+} TownieData;
 
 typedef struct ScoreEntryDataT {
   unsigned short score;
@@ -87,8 +96,15 @@ typedef struct ScoreEntryDataT {
   char entry[SCORE_NAME_LENGTH];
 } ScoreEntryData;
 
-typedef union EntityDataU {
+typedef union EntityInnerDataU {
   PlayerData pd;
+  TownieData td;
+} EntityInnerData;
+
+typedef struct EntityDataT {
+  Coord x;
+  Coord y;
+  EntityInnerData data;
 } EntityData;
 
 extern EntityKind entities[ENTITY_TABLE_SIZE];

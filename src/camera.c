@@ -1,21 +1,43 @@
 #include "camera.h"
 
-#pragma code-name (push, "PROG0")
+// TODO these should be properties of the currently loaded tilemap
+#define CAMERA_STOP_LEFT 0
+#define CAMERA_STOP_RIGHT 0x80
 
-Coord camera_x_scroll;
-Coord camera_y_scroll;
+char camera_scroll;
+signed char camera_req_scroll;
 
 void init_camera() {
-  camera_x_scroll.c = 0;
-  camera_y_scroll.c = 0;
+  camera_scroll = 0;
+  camera_req_scroll = 0;
 }
 
 void update_camera() {
-  camera_x_scroll.c += 20;
+  unsigned char i;
+  EntityData *entity;
 
-  if(camera_x_scroll.hl.h > 0x80)
-    camera_x_scroll.hl.h = 0;
-    
+  if (camera_scroll < CAMERA_STOP_RIGHT && camera_req_scroll > 0) {
+    camera_scroll++;
+
+    for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
+	if (entities[i] == EntityEmpty) break;
+
+	entity = &entity_data[i];
+	entity->x.hl.h--;
+    }
+  }
+  if (camera_req_scroll == 0xFF) {
+    while(1) {}
+  }
+
+  if (camera_scroll > CAMERA_STOP_LEFT && camera_req_scroll < 0) {
+    camera_scroll--;
+
+    for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
+	if (entities[i] == EntityEmpty) break;
+
+	entity = &entity_data[i];
+	entity->x.hl.h++;
+    }
+  }
 }
-
-#pragma code-name (pop)

@@ -1,15 +1,9 @@
 #include "player.h"
 
-#include "../gt/gametank.h"
-
 #pragma code-name (push, "PROG0")
 
-// TODO rm, just putting these here for now
-#define TILE_GOAL_SECRET 0x13
-#define TILE_GOAL 0x14
-#define TILE_KILL 0xBB
-
 void init_player(char x, char y) {
+  EntityData *p;
   PlayerData *data;
   char i;
 
@@ -17,14 +11,21 @@ void init_player(char x, char y) {
     if (entities[i] == EntityEmpty) {
       entities[i] = EntityPlayer;
 
-      data = (PlayerData *) &entity_data[i];
+      p = (EntityData *) &entity_data[i];
+      data = (PlayerData *) &p->data.pd;
 
-      data->x.hl.h = x;
-      data->x.hl.l = 0;
-      data->y.hl.h = y;
-      data->y.hl.l = 0;
+      p->x.hl.h = x;
+      p->x.hl.l = 0;
+      p->y.hl.h = y;
+      p->y.hl.l = 0;
+
       data->vx.c = 0;
       data->vy.c = 0;
+
+      data->facing = FACING_RIGHT;
+
+      data->stroke_boost = MAX_STROKE_BOOST;
+      data->auto_sink = 0;
 
       data->r = 0;
       data->d = 0;
@@ -38,24 +39,14 @@ void init_player(char x, char y) {
   // This should never be reached!!
 }
 
-void reset_player(char x, char y) {
-  player_data->x.hl.h = x;
-  player_data->x.hl.l = 0;
-  player_data->y.hl.h = y;
-  player_data->y.hl.l = 0;
-
-  player_data->r = x + PLAYER_SIZE;
-  player_data->d = y + PLAYER_SIZE;
-}
-
 void draw_player(char ix) {
-  PlayerData data;
+  EntityData p;
 
-  data = *((PlayerData *) &entity_data[ix]);
+  p = entity_data[ix];
 
   *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
-  vram[VX] = data.x.hl.h;
-  vram[VY] = data.y.hl.h;
+  vram[VX] = p.x.hl.h;
+  vram[VY] = p.y.hl.h;
   vram[GX] = 0;
   vram[GY] = 0;
   vram[WIDTH] = PLAYER_SIZE;
@@ -66,13 +57,29 @@ void draw_player(char ix) {
 }
 
 void update_player(char ix) {
+  EntityData *p;
   PlayerData *data;
 
-  data = (PlayerData *) &entity_data[ix];
+  p = (EntityData *) &entity_data[ix];
+  data = &p->data.pd;
+
+  if (data->stroke_boost < MAX_STROKE_BOOST)
+    data->stroke_boost += STROKE_INCREMENT;
+
+  if (data->auto_sink > 0) {
+    if (data->auto_sink < AUTO_SINK_START && !(player1_buttons & INPUT_MASK_UP)) {
+      data->vy.c += AUTO_SINK_STRENGTH << 1;
+    }
+
+    data->auto_sink--;
+  }
+
 
   if (player1_buttons & INPUT_MASK_RIGHT) {
+    data->facing = FACING_RIGHT;
     data->vx.c += PLAYER_ACCEL;
   } else if (player1_buttons & INPUT_MASK_LEFT) {
+    data->facing = FACING_LEFT;
     data->vx.c -= PLAYER_ACCEL;
   } else if (data->vx.c > 0 && data->vx.c < PLAYER_MIN_V) {
     data->vx.c = 0;
@@ -90,214 +97,62 @@ void update_player(char ix) {
     data->vy.c = 0;
   }
 
+  if (data->stroke_boost > MIN_STROKE && player1_new_buttons & INPUT_MASK_B) {
+    if (player1_buttons & INPUT_MASK_RIGHT) {
+      if (player1_buttons & INPUT_MASK_DOWN) {
+	data->vx.c += ((short) data->stroke_boost) << 4;
+	data->vy.c += ((short) data->stroke_boost);
+      } else {
+	data->vx.c += ((short) data->stroke_boost) << 4;
+	data->vy.c -= ((short) data->stroke_boost) << 2;
+	data->auto_sink = AUTO_SINK_TIMER;
+      }
+    } else if (player1_buttons & INPUT_MASK_LEFT) {
+      if (player1_buttons & INPUT_MASK_DOWN) {
+	data->vx.c -= ((short) data->stroke_boost) << 4;
+	data->vy.c += ((short) data->stroke_boost);
+      } else {
+	data->vx.c -= ((short) data->stroke_boost) << 4;
+	data->vy.c -= ((short) data->stroke_boost) << 2;
+	data->auto_sink = AUTO_SINK_TIMER;
+      }
+    } else {
+      if (data->facing == FACING_RIGHT) {
+	data->vx.c += ((short) data->stroke_boost) << 2;
+      } else {
+	data->vx.c -= ((short) data->stroke_boost) << 2;
+      }
+
+      if (player1_buttons & INPUT_MASK_DOWN) {
+	data->vy.c += ((short) data->stroke_boost) << 3;
+      } else {
+	data->vy.c -= ((short) data->stroke_boost) << 4;
+	data->auto_sink = AUTO_SINK_TIMER;
+      }
+    }
+
+    data->stroke_boost = 0;
+  }
+
   data->vx.c -= data->vx.c >> PLAYER_FRICTION_COEFF;
   data->vy.c -= data->vy.c >> PLAYER_FRICTION_COEFF;
 
-  data->x.c += data->vx.c;
-  data->y.c += data->vy.c;
+  p->x.c += data->vx.c;
+  p->y.c += data->vy.c;
 
-  data->r = data->x.hl.h + PLAYER_SIZE;
-  data->d = data->y.hl.h + PLAYER_SIZE;
-
-  return;
-  
-  // TILEMAP COLLISIONS
-  // Are wrossing a tile boundry on the right?
-  if (data->vx.c > 0 && (data->x.hl.h & (TILE_SIZE - 1)) == (TILE_SIZE - PLAYER_SIZE)) {
-    char tx = (data->x.hl.h >> 3) + 1;
-    char ty = data->y.hl.h >> 3;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vx.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[tx + ((ty + 1) << 4)];
-
-        if ((data->y.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vx.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
+  camera_req_scroll = 0;
+  // Should we scroll the camera?
+  if (data->vx.c > 0 && p->x.hl.h > CAMERA_SCROLL_START_RIGHT) {
+    camera_req_scroll = 1;
   }
 
-  // Are wrossing a tile boundry on the left?
-  if (data->vx.c < 0 && (data->x.hl.h & (TILE_SIZE - 1)) == 0) {
-    char tx = (data->x.hl.h >> 3) - 1;
-    char ty = data->y.hl.h >> 3;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vx.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[tx + ((ty + 1) << 4)];
-
-        if ((data->y.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vx.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
+  if (data->vx.c < 0 && p->x.hl.h < CAMERA_SCROLL_START_LEFT) {
+    camera_req_scroll = -1;
   }
 
-  data->x.c += data->vx.c;
-
-  // Are wrossing a tile boundry on the bottom?
-  if (data->vy.c > 0 && (data->y.hl.h & (TILE_SIZE - 1)) == (TILE_SIZE - PLAYER_SIZE)) {
-    char tx = data->x.hl.h >> 3;
-    char ty = (data->y.hl.h >> 3) + 1;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vy.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[(tx + 1) + (ty  << 4)];
-
-        if ((data->x.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vy.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
-  }
-
-  // Are wrossing a tile boundry on the top?
-  if (data->vy.c < 0 && (data->y.hl.h & (TILE_SIZE - 1)) == 0) {
-    char tx = data->x.hl.h >> 3;
-    char ty = (data->y.hl.h >> 3) - 1;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vy.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[(tx + 1) + (ty << 4)];
-
-        if ((data->x.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vy.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
-  }
-
-  data->y.c += data->vy.c;
-
-  data->r = data->x.hl.h + PLAYER_SIZE;
-  data->d = data->y.hl.h + PLAYER_SIZE;
-
-  return;
+  // TODO do we still want to cache these values
+  data->r = p->x.hl.h + PLAYER_SIZE;
+  data->d = p->y.hl.h + PLAYER_SIZE;
 }
 
 #pragma code-name (pop)
