@@ -2,12 +2,6 @@
 
 #pragma code-name (push, "PROG0")
 
-// TODO rm, just putting these here for now
-#define TILE_GOAL_SECRET 0x13
-#define TILE_GOAL 0x14
-#define TILE_KILL 0xBB
-
-
 void init_player(char x, char y) {
   EntityData *p;
   PlayerData *data;

@@ -1,5 +1,5 @@
-#ifndef  PLAYER_H
-#define  PLAYER_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include "../gt/gametank.h"
 #include "../gt/input.h"
