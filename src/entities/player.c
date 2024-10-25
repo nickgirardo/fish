@@ -1,7 +1,5 @@
 #include "player.h"
 
-#include "../gt/gametank.h"
-
 #pragma code-name (push, "PROG0")
 
 // TODO rm, just putting these here for now
@@ -96,208 +94,18 @@ void update_player(char ix) {
   data->x.c += data->vx.c;
   data->y.c += data->vy.c;
 
+  // Should we scroll the camera?
+  if (data->vx.c > 0 && data->x.hl.h > CAMERA_SCROLL_START_RIGHT) {
+    camera_request_x_scroll = 1;
+  }
+
+  if (data->vx.c < 0 && data->x.hl.h < CAMERA_SCROLL_START_LEFT) {
+    camera_request_x_scroll = -1;
+  }
+
+  // TODO do we still want to cache these values
   data->r = data->x.hl.h + PLAYER_SIZE;
   data->d = data->y.hl.h + PLAYER_SIZE;
-
-  return;
-  
-  // TILEMAP COLLISIONS
-  // Are wrossing a tile boundry on the right?
-  if (data->vx.c > 0 && (data->x.hl.h & (TILE_SIZE - 1)) == (TILE_SIZE - PLAYER_SIZE)) {
-    char tx = (data->x.hl.h >> 3) + 1;
-    char ty = data->y.hl.h >> 3;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vx.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[tx + ((ty + 1) << 4)];
-
-        if ((data->y.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vx.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
-  }
-
-  // Are wrossing a tile boundry on the left?
-  if (data->vx.c < 0 && (data->x.hl.h & (TILE_SIZE - 1)) == 0) {
-    char tx = (data->x.hl.h >> 3) - 1;
-    char ty = data->y.hl.h >> 3;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vx.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[tx + ((ty + 1) << 4)];
-
-        if ((data->y.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vx.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
-  }
-
-  data->x.c += data->vx.c;
-
-  // Are wrossing a tile boundry on the bottom?
-  if (data->vy.c > 0 && (data->y.hl.h & (TILE_SIZE - 1)) == (TILE_SIZE - PLAYER_SIZE)) {
-    char tx = data->x.hl.h >> 3;
-    char ty = (data->y.hl.h >> 3) + 1;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vy.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[(tx + 1) + (ty  << 4)];
-
-        if ((data->x.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vy.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
-  }
-
-  // Are wrossing a tile boundry on the top?
-  if (data->vy.c < 0 && (data->y.hl.h & (TILE_SIZE - 1)) == 0) {
-    char tx = data->x.hl.h >> 3;
-    char ty = (data->y.hl.h >> 3) - 1;
-    unsigned char tile = tilemap[tx + (ty << 4)];
-    unsigned char tileB;
-
-    switch (tile) {
-      case TILE_WALL:
-        data->vy.c = 0;
-        break;
-
-      case TILE_KILL:
-        return;
-
-      case TILE_GOAL:
-        return;
-
-      case TILE_GOAL_SECRET:
-        return;
-
-      default:
-        tileB = tilemap[(tx + 1) + (ty << 4)];
-
-        if ((data->x.hl.h & (TILE_SIZE - 1)) <= (TILE_SIZE - PLAYER_SIZE))
-          break;
-
-        switch (tileB) {
-          case TILE_WALL:
-            data->vy.c = 0;
-            break;
-
-          case TILE_KILL:
-            return;
-
-          case TILE_GOAL:
-            return;
-
-          case TILE_GOAL_SECRET:
-            return;
-
-          default: break;
-        }
-        break;
-    }
-  }
-
-  data->y.c += data->vy.c;
-
-  data->r = data->x.hl.h + PLAYER_SIZE;
-  data->d = data->y.hl.h + PLAYER_SIZE;
-
-  return;
 }
 
 #pragma code-name (pop)

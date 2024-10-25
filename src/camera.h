@@ -3,8 +3,8 @@
 
 #include "common.h"
 
-extern Coord camera_x_scroll;
-extern Coord camera_y_scroll;
+char camera_x_scroll;
+char camera_request_x_scroll;
 
 void init_camera();
 void update_camera();
