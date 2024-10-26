@@ -45,6 +45,31 @@ typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 #define FACING_RIGHT 0
 #define FACING_LEFT 1
 
+typedef struct StringT {
+  char len;
+  char *ptr;
+} String;
+
+typedef enum {
+  ActionEnd = 0,
+  ActionDialogueLine,
+} ActionKind;
+
+typedef struct ActionDialogueLineDataT {
+  String speaker;
+  String line;
+  void *next;
+} ActionDialogueLineData;
+
+typedef union ActionDataU {
+  ActionDialogueLineData adld;
+} ActionData;
+
+typedef struct ActionT {
+  ActionKind kind;
+  ActionData data;
+} Action;
+
 typedef enum {
   ResultOk = 0,
   ResultFail,
@@ -87,7 +112,8 @@ typedef struct PlayerDataT {
 } PlayerData;
 
 typedef struct TownieDataT {
-  Coord color;
+  // TODO just need a spacer so this struct isn't empty
+  char c;
 } TownieData;
 
 typedef struct ScoreEntryDataT {
@@ -104,6 +130,7 @@ typedef union EntityInnerDataU {
 typedef struct EntityDataT {
   Coord x;
   Coord y;
+  Action *action;
   EntityInnerData data;
 } EntityData;
 
@@ -111,5 +138,8 @@ extern EntityKind entities[ENTITY_TABLE_SIZE];
 extern EntityData *player_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
 extern void init_game();
+
+// TODO temp
+extern Action *entity_actions[];
 
 #endif // COMMON_H_

@@ -2,7 +2,7 @@
 
 #pragma code-name (push, "PROG0")
 
-void init_townie(char x, char y) {
+void init_townie(char x, char y, char action_ix) {
   EntityData *t;
   TownieData *data;
   char i;
@@ -19,7 +19,9 @@ void init_townie(char x, char y) {
       t->y.hl.h = y;
       t->y.hl.l = 0;
 
-      data->color.c = 0;
+
+      t->action = entity_actions[action_ix];
+
       return;
     }
   }
@@ -27,8 +29,7 @@ void init_townie(char x, char y) {
 }
 
 // TODO this will likely be useful for other entities, move it?
-#define should_render(x, width)			\
-  ((signed char) x + width > 0 )
+#define should_render(x, width) ((signed char) x + width > 0 )
 
 void draw_townie(char ix) {
   EntityData t;
@@ -48,19 +49,12 @@ void draw_townie(char ix) {
   vram[GY] = 0;
   vram[WIDTH] = 12;
   vram[HEIGHT] = 16;
-  vram[COLOR] = data.color.hl.h;
+  vram[COLOR] = 65;
   vram[START] = 1;
   wait();
 }
 
 void update_townie(char ix) {
-    EntityData *t;
-    TownieData *data;
-
-    t = (EntityData *) &entity_data[ix];
-    data = (TownieData *) &t->data.td;
-
-    data->color.c += 40;
 }
 
 #pragma code-name (pop)

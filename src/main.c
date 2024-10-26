@@ -31,6 +31,12 @@ unsigned char death_freeze = 0;
 
 LevelData levels[LEVEL_COUNT];
 
+// TODO this is for testing
+Action *entity_actions[] = {
+  (Action *) 0x4321,
+  (Action *) 0x1234,
+};
+
 void noop(void) {
   return;
 }
@@ -56,7 +62,7 @@ void init_entities(const unsigned char *data) {
         init_player();
         break;
       case EntityTownie:
-        init_townie(*(++data), *(++data));
+        init_townie(*(++data), *(++data), *(++data));
         break;
       default:
         // We shouldn't ever hit this branch if our levels are crafted correctly

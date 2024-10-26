@@ -19,6 +19,8 @@ void init_player() {
       p->y.hl.h = 0;
       p->y.hl.l = 0;
 
+      p->action = 0;
+
       data->vx.c = 0;
       data->vy.c = 0;
 
@@ -56,6 +58,40 @@ void draw_player(char ix) {
   wait();
 }
 
+void try_action(char ix) {
+  EntityData p;
+  EntityData entity;
+
+  char i;
+
+  signed char x_diff;
+  signed char y_diff;
+
+  p = entity_data[ix];
+
+  for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
+    if (i == ix) continue;
+    if (entities[i] == EntityEmpty) return;
+
+    entity = entity_data[i];
+
+    if (!entity.action) continue;
+
+    // If close enough trigger action
+    x_diff = entity.x.hl.h - p.x.hl.h;
+    y_diff = entity.y.hl.h - p.y.hl.h;
+
+    // TODO wack constants
+    if ((x_diff < 18 && x_diff > -22) &&
+	(y_diff < 10 && y_diff > -14)) {
+      queued_action = ((char) entity.action) + 1;
+
+      return;
+    }
+
+  }
+}
+
 void update_player(char ix) {
   EntityData *p;
   PlayerData *data;
@@ -74,6 +110,9 @@ void update_player(char ix) {
     data->auto_sink--;
   }
 
+  if (player1_new_buttons & INPUT_MASK_A) {
+    try_action(ix);
+  }
 
   if (player1_buttons & INPUT_MASK_RIGHT) {
     data->facing = FACING_RIGHT;

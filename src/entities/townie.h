@@ -7,7 +7,7 @@
 
 #include "../camera.h"
 
-void init_townie(char x, char y);
+void init_townie(char x, char y, char action_ix);
 void draw_townie(char ix);
 void update_townie(char ix);
 

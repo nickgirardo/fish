@@ -11,7 +11,7 @@ void scroll_all_entities(char scroll) {
   unsigned char i;
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
-      if (entities[i] == EntityEmpty) return;
+      if (entities[i] == EntityEmpty) continue;
 
 	entity = &entity_data[i];
 	entity->x.hl.h -= scroll;
