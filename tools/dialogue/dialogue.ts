@@ -19,6 +19,12 @@ interface ExitNode {
 interface TextNode {
   actionType: "text"
   text: string;
+  nextNode: string;
+}
+
+interface ResponseNode {
+  actionType: "response"
+  text: string;
   responses: string[];
 }
 
@@ -35,7 +41,7 @@ interface FlagNode {
   nextNode: string;
 }
 
-type DialogueNode = ExitNode | TextNode | ItemNode | FlagNode;
+type DialogueNode = ExitNode | TextNode | ResponseNode | ItemNode | FlagNode;
 
 interface ResponseEdge {
   responseText: string;
@@ -52,7 +58,7 @@ const testConv: Conversation = {
   npcName: "Fishy McGills",
   dialogueNodes: {
     entry: {
-      actionType: "text",
+      actionType: "response",
       text: "Hello",
       responses: [
         "goodbye",
@@ -60,7 +66,7 @@ const testConv: Conversation = {
       ],
     },
     story: {
-      actionType: "text",
+      actionType: "response",
       text: "Would you like a fish stick?",
       responses: [
         "goodbye",
@@ -70,7 +76,7 @@ const testConv: Conversation = {
       ]
     },
     repeat: {
-      actionType: "text",
+      actionType: "response",
       text: "I SAID would you like a fish stick?",
       responses: [
         "goodbye",
@@ -127,7 +133,7 @@ const runConv = async (conv: Conversation) => {
       process.stdout.write(` ${FgYellow}${conv.npcName}: ${FgMagenta}${node.text}\n\n`);
     }
     switch (node.actionType) {
-      case "text":
+      case "response":
         console.log(FgBlue, "Respond:")
         node.responses.forEach((element, index) => {
           console.log(FgGreen,`  ${index}:  ${conv.responseEdges[element].responseText}`);
@@ -172,7 +178,80 @@ const runConv = async (conv: Conversation) => {
   await currentNode(conv.dialogueNodes.entry);
 };
 
-await runConv(testConv);
+//await runConv(testConv);
+const singleDialog: Conversation = {
+  npcName: "1Ed",
+  dialogueNodes: {
+    entry: {
+      actionType: "text",
+      text: "I’m Ed! I’m one line of dialog!",
+      nextNode: "exit"
+    },
+    exit: {
+      actionType: "exit",
+      text: "TODO remove text from exits. Probably remove exits altogether."
+    }
+  },
+  responseEdges: {},
+}
+
+const simpleDialog: Conversation = {
+  npcName: "Ed",
+  dialogueNodes: {
+    entry: {
+      actionType: "text",
+      text: "I’m Ed! I’m the hamfish!",
+      nextNode: "line2"
+    },
+    line2: {
+      actionType: "text",
+      text: "Boston makes me feel good",
+      nextNode: "line3",
+    },
+    line3: {
+      actionType: "text",
+      text: "I have a swimmie talkie", nextNode: "exit"
+    },
+    exit: {
+      actionType: "exit",
+      text: "TODO remove text from exits. Probably remove exits altogether."
+    }
+  },
+  responseEdges: {},
+}
+
+const exportDialogToC = (conv: Conversation) => {
+  const dialogMap = Object.values(conv.dialogueNodes).filter(n => n.actionType == "text").map(n => (
+    {count: n.text.length, text: n.text }
+  )).reduce<any>( //TODO typing
+    (acc, curr) => {
+      return {
+        dialogBuf: acc.dialogBuf + curr.text,
+        actionBuf: [...acc.actionBuf, {...curr, offset: acc.dialogBuf.length}]
+      }
+  },
+    {dialogBuf: conv.npcName, actionBuf: []},
+  );
+  //console.log(JSON.stringify(dialogMap))
+  // TODO support multinpc jawns
+  const actionString = (action: {offset: number, text: string, count: number}) => `  {ActionDialogLine, {{dialogBuf[${action.offset}], ${action.count}}, {dialogBuf[${0}], ${conv.npcName.length}}, ${0}}}`;
+
+  const file = `
+#include "common.h"
+
+char *dialogBuf = "${dialogMap.dialogBuf}";
+
+Action *actionBuf = [
+  // {offset, length}
+  {ActionEnd, {}},
+${dialogMap.actionBuf.map(actionString).join(',\n')}
+];
+`
+  console.log(file)
+}
+
+//exportDialogToC(simpleDialog);
+exportDialogToC(singleDialog);
 
 //const prompt = "Type something: ";
 //process.stdout.write(prompt);
