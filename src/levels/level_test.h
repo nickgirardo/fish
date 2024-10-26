@@ -97,9 +97,9 @@ const unsigned char level_test_y_plane[LEVEL_TEST_MAP_SIZE] = {
 };
 
 const unsigned char level_test_entities[] = {
-EntityPlayer,12,100,
 EntityTownie,100,40,
 EntityTownie,200,60,
+EntityPlayer,
 EntityEmpty,
 };
 

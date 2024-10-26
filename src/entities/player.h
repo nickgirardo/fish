@@ -7,6 +7,7 @@
 #include "../common.h"
 
 #include "../camera.h"
+#include "../portal.h"
 
 #define PLAYER_ACCEL 20
 #define PLAYER_MIN_V 0x0010
@@ -26,7 +27,7 @@
 #define CAMERA_SCROLL_START_LEFT  0x24
 #define CAMERA_SCROLL_START_RIGHT 0x40
 
-void init_player(char x, char y);
+void init_player();
 void draw_player(char ix);
 void update_player(char ix);
 

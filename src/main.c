@@ -10,6 +10,7 @@
 
 #include "camera.h"
 #include "tilemap.h"
+#include "portal.h"
 
 #include "entities/player.h"
 #include "entities/townie.h"
@@ -20,7 +21,7 @@
 #include "gen/assets/sfx.h"
 
 EntityKind entities[ENTITY_TABLE_SIZE];
-PlayerData *player_data;
+EntityData *player_data;
 EntityData entity_data[ENTITY_TABLE_SIZE];
 
 unsigned char current_level;
@@ -52,7 +53,7 @@ void init_entities(const unsigned char *data) {
   while(*data != EntityEmpty) {
     switch (*data) {
       case EntityPlayer:
-        init_player(*(++data), *(++data));
+        init_player();
         break;
       case EntityTownie:
         init_townie(*(++data), *(++data));
@@ -79,14 +80,22 @@ void init_level() {
   LevelData l;
   l = levels[current_level];
 
-  init_camera();
-
   init_tilemap(l.tilemap);
 
-  // TODO from some source
-  init_camera(0, 0, 0x80);
-
   init_entities(l.entities);
+
+  init_camera();
+
+  player_data->x.hl.h = portal_target_player_x;
+  player_data->y.hl.h = portal_target_player_y;
+
+}
+
+void take_portal() {
+  init_camera();
+
+  player_data->x.hl.h = portal_target_player_x;
+  player_data->y.hl.h = portal_target_player_y;
 }
 
 void init_game() {
@@ -116,6 +125,12 @@ void (*const update_fns[])(char) = {
 int main() {
   char i;
 
+  portal_target_scroll = 0;
+  portal_target_scrollstop_left = 0;
+  portal_target_scrollstop_right = 0x80;
+  portal_target_player_x = 12;
+  portal_target_player_y = 100;
+
   init_graphics();
   load_font(0);
 
@@ -143,6 +158,11 @@ int main() {
     tick_music();
 
     update_inputs();
+
+    if (portal_active) {
+      take_portal();
+      portal_active = false;
+    }
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
 	update_fns[entities[i]](i);

@@ -54,7 +54,7 @@ typedef enum {
 } CollisionResult;
 
 typedef struct LevelDataT {
-  const unsigned char *tilemap;
+  const char *tilemap;
   const unsigned char *entities;
   const char *name;
 } LevelData;
@@ -108,7 +108,7 @@ typedef struct EntityDataT {
 } EntityData;
 
 extern EntityKind entities[ENTITY_TABLE_SIZE];
-extern PlayerData *player_data;
+extern EntityData *player_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
 extern void init_game();
 
