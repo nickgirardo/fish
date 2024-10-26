@@ -5,7 +5,7 @@
 char *tilemap;
 
 // TODO this is a big waste
-void init_tilemap(unsigned short map_size, const unsigned char *map) {
+void init_tilemap(const char *map) {
     tilemap = map;
 }
 

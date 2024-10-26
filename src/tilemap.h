@@ -10,7 +10,7 @@
 
 #include "camera.h"
 
-void init_tilemap(unsigned short map_size, const unsigned char *map);
+void init_tilemap(const char *map);
 void draw_tilemap();
 
 extern char *tilemap;

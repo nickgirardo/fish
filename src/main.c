@@ -81,8 +81,10 @@ void init_level() {
 
   init_camera();
 
-  // TODO obv don't hardcode this
-  init_tilemap(512, l.tilemap);
+  init_tilemap(l.tilemap);
+
+  // TODO from some source
+  init_camera(0, 0, 0x80);
 
   init_entities(l.entities);
 }
