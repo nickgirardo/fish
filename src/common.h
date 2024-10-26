@@ -47,22 +47,40 @@ typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 
 typedef struct StringT {
   char len;
+  // TODO
   char *ptr;
 } String;
 
 typedef enum {
   ActionEnd = 0,
-  ActionDialogueLine,
+  ActionDialogLine,
+  ActionPortal,
 } ActionKind;
 
-typedef struct ActionDialogueLineDataT {
+typedef struct ActionEndDataT {
+  // Just need to make sure this isn't an empty struct
+  char pad;
+} ActionEndData;
+  
+typedef struct ActionDialogLineDataT {
   String speaker;
   String line;
-  void *next;
-} ActionDialogueLineData;
+  struct ActionT *next;
+} ActionDialogLineData;
+
+typedef struct ActionPortalDataT {
+  char scroll;
+  char scrollstop_left;
+  char scrollstop_right;
+  char player_x;
+  char player_y;
+  struct ActionT *next;
+} ActionPortalData;
 
 typedef union ActionDataU {
-  ActionDialogueLineData adld;
+  ActionEndData aed;
+  ActionDialogLineData adld;
+  ActionPortalData apd;
 } ActionData;
 
 typedef struct ActionT {

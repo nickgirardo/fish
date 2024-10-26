@@ -31,12 +31,6 @@ unsigned char death_freeze = 0;
 
 LevelData levels[LEVEL_COUNT];
 
-// TODO this is for testing
-Action *entity_actions[] = {
-  (Action *) 0x4321,
-  (Action *) 0x1234,
-};
-
 void noop(void) {
   return;
 }
@@ -128,6 +122,7 @@ void (*const update_fns[])(char) = {
   update_townie,
 };
 
+extern Action *action_buf;
 int main() {
   char i;
 
@@ -165,6 +160,8 @@ int main() {
 
     update_inputs();
 
+    process_action();
+
     if (portal_active) {
       take_portal();
       portal_active = false;
@@ -176,9 +173,7 @@ int main() {
 
     update_camera();
 
-    PROFILER_START(1);
     draw_tilemap();
-    PROFILER_END(1);
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
       drawing_fns[entities[i]](i);

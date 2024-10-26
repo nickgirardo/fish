@@ -84,7 +84,7 @@ void try_action(char ix) {
     // TODO wack constants
     if ((x_diff < 18 && x_diff > -22) &&
 	(y_diff < 10 && y_diff > -14)) {
-      queued_action = ((char) entity.action) + 1;
+      queued_action = entity.action;
 
       return;
     }
