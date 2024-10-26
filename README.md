@@ -1,4 +1,4 @@
-# A Very Hard Game
+# A Very Fish Game
 
 A game built for the [GameTank](https://gametank.zone)!
 
