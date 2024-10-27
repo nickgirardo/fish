@@ -13,7 +13,6 @@
 #include "portal.h"
 
 #include "entities/player.h"
-#include "entities/townie.h"
 
 #include "levels/level_test.h"
 
@@ -54,9 +53,6 @@ void init_entities(const unsigned char *data) {
     switch (*data) {
       case EntityPlayer:
         init_player();
-        break;
-      case EntityTownie:
-        init_townie(*(++data), *(++data), *(++data));
         break;
       default:
         // We shouldn't ever hit this branch if our levels are crafted correctly
@@ -107,11 +103,9 @@ void init_game() {
 void (*const drawing_fns[])(char) = {
   (void (*const)(char))noop,
   draw_player,
-  draw_townie,
 };
 
 CollisionResult (*const test_collision[])(char) = {
-  (CollisionResult (*const)(char))noop_collision,
   (CollisionResult (*const)(char))noop_collision,
   (CollisionResult (*const)(char))noop_collision,
 };
@@ -119,7 +113,6 @@ CollisionResult (*const test_collision[])(char) = {
 void (*const update_fns[])(char) = {
   (void (*const)(char))noop,
   update_player,
-  update_townie,
 };
 
 extern Action *action_buf;

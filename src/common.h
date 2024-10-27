@@ -115,7 +115,6 @@ typedef union CoordU {
 typedef enum {
   EntityEmpty = 0,
   EntityPlayer,
-  EntityTownie,
 } EntityKind;
 
 typedef struct PlayerDataT {
@@ -129,11 +128,6 @@ typedef struct PlayerDataT {
   unsigned char d;
 } PlayerData;
 
-typedef struct TownieDataT {
-  // TODO just need a spacer so this struct isn't empty
-  char c;
-} TownieData;
-
 typedef struct ScoreEntryDataT {
   unsigned short score;
   unsigned char cursor;
@@ -142,7 +136,6 @@ typedef struct ScoreEntryDataT {
 
 typedef union EntityInnerDataU {
   PlayerData pd;
-  TownieData td;
 } EntityInnerData;
 
 typedef struct EntityDataT {
