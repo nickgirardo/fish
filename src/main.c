@@ -12,6 +12,7 @@
 #include "tilemap.h"
 
 #include "entities/player.h"
+#include "entities/ring_post.h"
 
 #include "levels/level_test.h"
 
@@ -56,6 +57,9 @@ void init_entities(const unsigned char *data) {
       case EntityPlayer:
         init_player();
         break;
+      case EntityRingPost:
+        init_ring_post(*(++data), *(++data));
+        break;
       default:
         // We shouldn't ever hit this branch if our levels are crafted correctly
         // Just hard-lock
@@ -97,9 +101,11 @@ void init_game() {
 void (*const drawing_fns[])(char) = {
   (void (*const)(char))noop,
   draw_player,
+  draw_ring_post,
 };
 
 CollisionResult (*const test_collision[])(char) = {
+  (CollisionResult (*const)(char))noop_collision,
   (CollisionResult (*const)(char))noop_collision,
   (CollisionResult (*const)(char))noop_collision,
 };
@@ -107,6 +113,7 @@ CollisionResult (*const test_collision[])(char) = {
 void (*const update_fns[])(char) = {
   (void (*const)(char))noop,
   update_player,
+  (void (*const)(char))noop,
 };
 
 int main() {

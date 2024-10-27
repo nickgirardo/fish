@@ -50,6 +50,12 @@ typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 #define FACING_RIGHT 0
 #define FACING_LEFT 1
 
+// Empty structs aren't supported by cc65
+// This struct with a single char is the smallest possible struct
+typedef struct EmptyT {
+  char unused;
+} Empty;
+
 typedef struct StringT {
   char len;
   // TODO
@@ -83,6 +89,7 @@ typedef union CoordU {
 typedef enum {
   EntityEmpty = 0,
   EntityPlayer,
+  EntityRingPost,
 } EntityKind;
 
 typedef struct PlayerDataT {
@@ -104,6 +111,7 @@ typedef struct ScoreEntryDataT {
 
 typedef union EntityInnerDataU {
   PlayerData pd;
+  Empty empty;
 } EntityInnerData;
 
 typedef struct EntityDataT {
