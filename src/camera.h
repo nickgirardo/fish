@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#define START_SCROLL 0
+#define START_SCROLL 0x40
 #define SCROLLSTOP_LEFT 0
 #define SCROLLSTOP_RIGHT 0x80
 

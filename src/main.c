@@ -18,8 +18,8 @@
 #include "gen/assets/music.h"
 #include "gen/assets/sfx.h"
 
-#define PLAYER_START_X 12
-#define PLAYER_START_Y 100
+#define PLAYER_START_X 0x20
+#define PLAYER_START_Y 0x60
 
 EntityKind entities[ENTITY_TABLE_SIZE];
 EntityData *player_data;
