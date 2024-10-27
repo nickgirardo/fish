@@ -8,7 +8,6 @@
 
 #include "../camera.h"
 #include "../portal.h"
-#include "../action.h"
 
 #define PLAYER_ACCEL 20
 #define PLAYER_MIN_V 0x0010

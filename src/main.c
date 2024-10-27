@@ -115,7 +115,6 @@ void (*const update_fns[])(char) = {
   update_player,
 };
 
-extern Action *action_buf;
 int main() {
   char i;
 
@@ -152,8 +151,6 @@ int main() {
     tick_music();
 
     update_inputs();
-
-    process_action();
 
     if (portal_active) {
       take_portal();

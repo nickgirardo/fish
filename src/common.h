@@ -52,43 +52,6 @@ typedef struct StringT {
 } String;
 
 typedef enum {
-  ActionEnd = 0,
-  ActionDialogLine,
-  ActionPortal,
-} ActionKind;
-
-typedef struct ActionEndDataT {
-  // Just need to make sure this isn't an empty struct
-  char pad;
-} ActionEndData;
-  
-typedef struct ActionDialogLineDataT {
-  String speaker;
-  String line;
-  struct ActionT *next;
-} ActionDialogLineData;
-
-typedef struct ActionPortalDataT {
-  char scroll;
-  char scrollstop_left;
-  char scrollstop_right;
-  char player_x;
-  char player_y;
-  struct ActionT *next;
-} ActionPortalData;
-
-typedef union ActionDataU {
-  ActionEndData aed;
-  ActionDialogLineData adld;
-  ActionPortalData apd;
-} ActionData;
-
-typedef struct ActionT {
-  ActionKind kind;
-  ActionData data;
-} Action;
-
-typedef enum {
   ResultOk = 0,
   ResultFail,
   ResultWin,
@@ -141,7 +104,6 @@ typedef union EntityInnerDataU {
 typedef struct EntityDataT {
   Coord x;
   Coord y;
-  Action *action;
   EntityInnerData data;
 } EntityData;
 
@@ -149,8 +111,5 @@ extern EntityKind entities[ENTITY_TABLE_SIZE];
 extern EntityData *player_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
 extern void init_game();
-
-// TODO temp
-extern Action *entity_actions[];
 
 #endif // COMMON_H_
