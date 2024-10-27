@@ -6,6 +6,8 @@
 #include "gametank.h"
 #include "banking.h"
 
+#include "../common.h"
+
 char cursorX, cursorY;
 char draw_busy;
 
@@ -232,35 +234,33 @@ void await_drawing() {
     }
 }
 
-#define BORDER_SIZE 8
-
 void clear_border(char c) {
     draw_box(
 	     0,
 	     0,
-	     SCREEN_WIDTH-BORDER_SIZE,
-	     BORDER_SIZE,
+	     SCREEN_WIDTH-BORDER_RIGHT_WIDTH,
+	     BORDER_TOP_HEIGHT,
 	     c
     );
     draw_box(
 	     0,
-	     BORDER_SIZE,
-	     BORDER_SIZE,
-	     SCREEN_HEIGHT-BORDER_SIZE,
+	     BORDER_TOP_HEIGHT,
+	     BORDER_LEFT_WIDTH,
+	     SCREEN_HEIGHT-BORDER_TOP_HEIGHT,
 	     c
     );
     draw_box(
-	     BORDER_SIZE,
-	     SCREEN_HEIGHT-1,
-	     SCREEN_WIDTH-BORDER_SIZE,
-	     1,
+	     BORDER_LEFT_WIDTH,
+	     SCREEN_HEIGHT-BORDER_BOTTOM_HEIGHT,
+	     SCREEN_WIDTH-BORDER_LEFT_WIDTH,
+	     BORDER_BOTTOM_HEIGHT,
 	     c
     );
     draw_box(
-	     SCREEN_WIDTH-BORDER_SIZE,
+	     SCREEN_WIDTH-BORDER_RIGHT_WIDTH,
 	     0,
-	     BORDER_SIZE,
-	     SCREEN_HEIGHT-1,
+	     BORDER_RIGHT_WIDTH,
+	     SCREEN_HEIGHT-BORDER_BOTTOM_HEIGHT,
 	     c
     );
 }

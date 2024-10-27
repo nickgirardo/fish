@@ -12,6 +12,11 @@
 
 #define COLOR_BG 6
 
+#define BORDER_LEFT_WIDTH 8
+#define BORDER_RIGHT_WIDTH 8
+#define BORDER_TOP_HEIGHT 8
+#define BORDER_BOTTOM_HEIGHT 1
+
 // Tilemap related definitions
 #define TILE_SIZE 8
 
