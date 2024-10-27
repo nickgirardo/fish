@@ -10,7 +10,6 @@
 
 #include "camera.h"
 #include "tilemap.h"
-#include "portal.h"
 
 #include "entities/player.h"
 
@@ -18,6 +17,9 @@
 
 #include "gen/assets/music.h"
 #include "gen/assets/sfx.h"
+
+#define PLAYER_START_X 12
+#define PLAYER_START_Y 100
 
 EntityKind entities[ENTITY_TABLE_SIZE];
 EntityData *player_data;
@@ -82,16 +84,8 @@ void init_level() {
 
   init_camera();
 
-  player_data->x.hl.h = portal_target_player_x;
-  player_data->y.hl.h = portal_target_player_y;
-
-}
-
-void take_portal() {
-  init_camera();
-
-  player_data->x.hl.h = portal_target_player_x;
-  player_data->y.hl.h = portal_target_player_y;
+  player_data->x.hl.h = PLAYER_START_X;
+  player_data->y.hl.h = PLAYER_START_Y;
 }
 
 void init_game() {
@@ -117,12 +111,6 @@ void (*const update_fns[])(char) = {
 
 int main() {
   char i;
-
-  portal_target_scroll = 0;
-  portal_target_scrollstop_left = 0;
-  portal_target_scrollstop_right = 0x80;
-  portal_target_player_x = 12;
-  portal_target_player_y = 100;
 
   init_graphics();
   load_font(0);
@@ -151,11 +139,6 @@ int main() {
     tick_music();
 
     update_inputs();
-
-    if (portal_active) {
-      take_portal();
-      portal_active = false;
-    }
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
 	update_fns[entities[i]](i);
