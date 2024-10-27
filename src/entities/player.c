@@ -63,6 +63,7 @@ void update_player(char ix) {
   p = (EntityData *) &entity_data[ix];
   data = &p->data.pd;
 
+  // Auto sink logic
   if (data->stroke_boost < MAX_STROKE_BOOST)
     data->stroke_boost += STROKE_INCREMENT;
 
@@ -74,6 +75,7 @@ void update_player(char ix) {
     data->auto_sink--;
   }
 
+  // Basic movement logic
   if (player1_buttons & INPUT_MASK_RIGHT) {
     data->facing = FACING_RIGHT;
     data->vx.c += PLAYER_ACCEL;
@@ -96,6 +98,7 @@ void update_player(char ix) {
     data->vy.c = 0;
   }
 
+  // Stroke (speed boost) logic
   if (data->stroke_boost > MIN_STROKE && player1_new_buttons & INPUT_MASK_B) {
     if (player1_buttons & INPUT_MASK_RIGHT) {
       if (player1_buttons & INPUT_MASK_DOWN) {
@@ -133,21 +136,35 @@ void update_player(char ix) {
     data->stroke_boost = 0;
   }
 
+  // "Friction" logic
   data->vx.c -= data->vx.c >> PLAYER_FRICTION_COEFF;
   data->vy.c -= data->vy.c >> PLAYER_FRICTION_COEFF;
 
+  // Screen border collision logic
+  // TODO
+
+  // Add our calculated velocities to our position
   p->x.c += data->vx.c;
   p->y.c += data->vy.c;
 
-  camera_req_scroll = 0;
-  // Should we scroll the camera?
-  if (data->vx.c > 0 && p->x.hl.h > CAMERA_SCROLL_START_RIGHT) {
-    camera_req_scroll = 1;
+  // Check collisions with screen borders
+  if (p->x.hl.h < BORDER_LEFT_WIDTH || p->x.hl.h > (SCREEN_WIDTH - BORDER_RIGHT_WIDTH - PLAYER_SIZE)) {
+    p->x.c -= data->vx.c;
+    data->vx.c *= -1;
   }
 
-  if (data->vx.c < 0 && p->x.hl.h < CAMERA_SCROLL_START_LEFT) {
-    camera_req_scroll = -1;
+  if (p->y.hl.h < BORDER_TOP_HEIGHT || p->y.hl.h > (SCREEN_HEIGHT - BORDER_BOTTOM_HEIGHT - PLAYER_SIZE)) {
+    p->y.c -= data->vy.c;
+    data->vy.c *= -1;
   }
+
+  // Camera scroll logic
+  camera_req_scroll = 0;
+  if (data->vx.c > 0 && p->x.hl.h > CAMERA_SCROLL_START_RIGHT)
+    camera_req_scroll = 1;
+
+  if (data->vx.c < 0 && p->x.hl.h < CAMERA_SCROLL_START_LEFT)
+    camera_req_scroll = -1;
 
   // TODO do we still want to cache these values
   data->r = p->x.hl.h + PLAYER_SIZE;
