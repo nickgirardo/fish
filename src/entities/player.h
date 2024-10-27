@@ -8,11 +8,15 @@
 
 #include "../camera.h"
 
+#include "ring_post.h"
+
 #define PLAYER_ACCEL 20
 #define PLAYER_MIN_V 0x0010
 #define PLAYER_MIN_V_NEG -0x0010
 #define PLAYER_FRICTION_COEFF 2
+
 #define PLAYER_SIZE 12
+#define PLAYER_HALF_SIZE 6
 
 #define MAX_STROKE_BOOST 0x24
 #define MIN_STROKE 0x10

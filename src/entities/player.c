@@ -60,10 +60,17 @@ void update_player(char ix) {
   EntityData *p;
   PlayerData *data;
 
+  EntityData *other;
+  char i;
+  signed char c;
+
+  PROFILER_START(1);
+
   p = (EntityData *) &entity_data[ix];
   data = &p->data.pd;
 
   // Auto sink logic
+  // TODO remove auto_sink if a player bonks going up
   if (data->stroke_boost < MAX_STROKE_BOOST)
     data->stroke_boost += STROKE_INCREMENT;
 
@@ -140,14 +147,15 @@ void update_player(char ix) {
   data->vx.c -= data->vx.c >> PLAYER_FRICTION_COEFF;
   data->vy.c -= data->vy.c >> PLAYER_FRICTION_COEFF;
 
-  // Screen border collision logic
-  // TODO
-
   // Add our calculated velocities to our position
   p->x.c += data->vx.c;
   p->y.c += data->vy.c;
 
-  // Check collisions with screen borders
+  // TODO do we still want to cache these values
+  data->r = p->x.hl.h + PLAYER_SIZE;
+  data->d = p->y.hl.h + PLAYER_SIZE;
+
+  // Check and handle collisions with screen borders
   if (p->x.hl.h < BORDER_LEFT_WIDTH || p->x.hl.h > (SCREEN_WIDTH - BORDER_RIGHT_WIDTH - PLAYER_SIZE)) {
     p->x.c -= data->vx.c;
     data->vx.c *= -1;
@@ -158,6 +166,54 @@ void update_player(char ix) {
     data->vy.c *= -1;
   }
 
+  // Check and handle collisions with other entities
+  for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
+    if (i == ix) continue;
+    switch(entities[i]) {
+    case EntityEmpty:
+      // TODO for perf this might be able to break out of the loop entirely
+      // This is the case if we can ensure that empty entities always are at the end of the entity list
+      break;
+    case EntityPlayer:
+      // TODO if (a big if) we add multiplayer there will need to be some relevant logic here
+      break;
+    case EntityRingPost:
+      other = &entity_data[i];
+      if (box_collision(other->x.hl.h,
+			other->x.hl.h + RING_POST_SIZE,
+			  other->y.hl.h,
+			  other->y.hl.h + RING_POST_SIZE,
+			  p->x.hl.h,
+			  p->x.hl.h + PLAYER_SIZE,
+			  p->y.hl.h,
+			  p->y.hl.h + PLAYER_SIZE)) {
+	// We have a collision! To resolve the collision bounce the player back
+	// Despite everything being squares and trig being too slow, we want to emulate a circular collision
+
+	// Where is the player wrt the colliding post in the x direction
+	c = (p->x.hl.h + PLAYER_HALF_SIZE) - (other->x.hl.h + RING_POST_HALF_SIZE);
+
+	// Bounce back against the post in the x direction
+	// If the player is to the left of it and moving right they should be bounced back
+	// Similarly for the other direction
+	// NOTE the values 7 and -7 below were found experimentally
+	if ((data->vx.c < 0 && c >= 7) || (data->vx.c > 0 && c <= -7)) {
+	  p->x.c -= data->vx.c;
+	  data->vx.c *= -1;
+	}
+
+	// The same as the above but in the y direction
+	c = (p->y.hl.h + PLAYER_HALF_SIZE) - (other->y.hl.h + RING_POST_HALF_SIZE);
+
+	if ((data->vy.c < 0 && c >= 7) || (data->vy.c > 0 && c <= -7)) {
+	  p->y.c -= data->vy.c;
+	  data->vy.c *= -1;
+	}
+      }
+      break;
+    }
+  }
+
   // Camera scroll logic
   camera_req_scroll = 0;
   if (data->vx.c > 0 && p->x.hl.h > CAMERA_SCROLL_START_RIGHT)
@@ -166,9 +222,7 @@ void update_player(char ix) {
   if (data->vx.c < 0 && p->x.hl.h < CAMERA_SCROLL_START_LEFT)
     camera_req_scroll = -1;
 
-  // TODO do we still want to cache these values
-  data->r = p->x.hl.h + PLAYER_SIZE;
-  data->d = p->y.hl.h + PLAYER_SIZE;
+  PROFILER_END(1);
 }
 
 #pragma code-name (pop)
