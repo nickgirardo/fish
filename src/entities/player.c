@@ -170,12 +170,12 @@ void update_player(char ix) {
   if (box_collision_x(top_ring_post_data->x.hl.h,
 		      top_ring_post_data->x.hl.h + RING_POST_SIZE,
 		      p->x.hl.h,
-		      p->x.hl.h + PLAYER_SIZE)) {
+		      data->r)) {
     // First test the top post
     if (box_collision_y(top_ring_post_data->y.hl.h,
 			top_ring_post_data->y.hl.h + RING_POST_SIZE,
 			p->y.hl.h,
-			p->y.hl.h + PLAYER_SIZE)) {
+			data->d)) {
       // We have a collision! To resolve the collision bounce the player back
       // Despite everything being squares and trig being too slow, we want to emulate a circular collision
 
@@ -201,7 +201,7 @@ void update_player(char ix) {
     } else if (box_collision_y(top_ring_post_data->y.hl.h + RING_POST_GAP,
 			top_ring_post_data->y.hl.h + RING_POST_SIZE + RING_POST_GAP,
 			p->y.hl.h,
-			p->y.hl.h + PLAYER_SIZE)) {
+			data->d)) {
       // Colliding with the bottom post
       // Note above the `else if`. The player cannot collide with both posts at once, this should help eliminate spurious tests
       // The code which follows is largely similar to the code above, adding a `RING_POST_GAP` where necessary
