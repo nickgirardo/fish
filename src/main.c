@@ -35,10 +35,6 @@ void noop(void) {
   return;
 }
 
-CollisionResult noop_collision(void) {
-  return ResultOk;
-}
-
 void clear_entities() {
   char i;
 
@@ -97,12 +93,6 @@ void (*const drawing_fns[])(char) = {
   (void (*const)(char))noop,
   draw_player,
   draw_ring_post,
-};
-
-CollisionResult (*const test_collision[])(char) = {
-  (CollisionResult (*const)(char))noop_collision,
-  (CollisionResult (*const)(char))noop_collision,
-  (CollisionResult (*const)(char))noop_collision,
 };
 
 void (*const update_fns[])(char) = {

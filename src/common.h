@@ -5,33 +5,16 @@
 
 #define ENTITY_TABLE_SIZE 10
 
-// Mostly defining this for debugging purposes
-#define STARTING_LEVEL 0
-
-#define LEVEL_COUNT 7
-
-#define COLOR_BG 6
-
 #define BORDER_LEFT_WIDTH 8
 #define BORDER_RIGHT_WIDTH 8
 #define BORDER_TOP_HEIGHT 8
 #define BORDER_BOTTOM_HEIGHT 1
 
+#define LEVEL_COUNT 1
+#define STARTING_LEVEL 0
+
 // Tilemap related definitions
 #define TILE_SIZE 8
-
-// TODO tilemap width and height aren't going to be fixed as they were in avhg
-#define TILEMAP_WIDTH 16
-#define TILEMAP_HEIGHT 16
-#define TILEMAP_SIZE (TILEMAP_HEIGHT * TILEMAP_WIDTH)
-
-// TODO just setting a fairly large max for now
-#define MAX_TILEMAP_SIZE 2048
-
-#define TILE_WALL 0
-
-#define SCORE_ENTRIES 10
-#define SCORE_NAME_LENGTH 10
 
 #define RING_POST_GAP 28
 
@@ -57,20 +40,6 @@ typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 typedef struct EmptyT {
   char unused;
 } Empty;
-
-typedef struct StringT {
-  char len;
-  // TODO
-  char *ptr;
-} String;
-
-typedef enum {
-  ResultOk = 0,
-  ResultFail,
-  ResultWin,
-  ResultGetSecret,
-  ResultSecretWin,
-} CollisionResult;
 
 typedef struct LevelDataT {
   const char *tilemap;
