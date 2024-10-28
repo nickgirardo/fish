@@ -133,7 +133,8 @@ int main() {
     update_inputs();
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
-	update_fns[entities[i]](i);
+      if (entities[i] == EntityEmpty) break;
+      update_fns[entities[i]](i);
     }
 
     update_camera();
@@ -141,6 +142,7 @@ int main() {
     draw_tilemap();
 
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
+      if (entities[i] == EntityEmpty) break;
       drawing_fns[entities[i]](i);
     }
 
