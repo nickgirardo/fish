@@ -30,7 +30,7 @@
 #define CAMERA_SCROLL_START_LEFT  0x24
 #define CAMERA_SCROLL_START_RIGHT 0x40
 
-void init_player();
+void init_player(char x, char y);
 void draw_player(char ix);
 void update_player(char ix);
 

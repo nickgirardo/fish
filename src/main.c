@@ -19,10 +19,6 @@
 #include "gen/assets/music.h"
 #include "gen/assets/sfx.h"
 
-// TODO rm
-#define PLAYER_START_X 0x20
-#define PLAYER_START_Y 0x60
-
 EntityKind entities[ENTITY_TABLE_SIZE];
 EntityData *player_data;
 EntityData *top_ring_post_data;
@@ -57,7 +53,7 @@ void init_entities(const unsigned char *data) {
   while(*data != EntityEmpty) {
     switch (*data) {
       case EntityPlayer:
-        init_player();
+        init_player(*(++data), *(++data));
         break;
       case EntityRingPost:
         init_ring_post(*(++data), *(++data), *(++data));
@@ -89,9 +85,6 @@ void init_level() {
   init_entities(l.entities);
 
   init_camera();
-
-  player_data->x.hl.h = PLAYER_START_X;
-  player_data->y.hl.h = PLAYER_START_Y;
 }
 
 void init_game() {

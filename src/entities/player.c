@@ -2,7 +2,7 @@
 
 #pragma code-name (push, "PROG0")
 
-void init_player() {
+void init_player(char x, char y) {
   EntityData *p;
   PlayerData *data;
   char i;
@@ -14,9 +14,9 @@ void init_player() {
       p = (EntityData *) &entity_data[i];
       data = (PlayerData *) &p->data.pd;
 
-      p->x.hl.h = 0;
+      p->x.hl.h = x;
       p->x.hl.l = 0;
-      p->y.hl.h = 0;
+      p->y.hl.h = y;
       p->y.hl.l = 0;
 
       data->vx.c = 0;
