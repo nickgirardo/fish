@@ -1,7 +1,8 @@
 #include "ring_post.h"
 
-void init_ring_post(char x, char y) {
+void init_ring_post(char x, char y, char is_top_post) {
   EntityData *r;
+  RingPostData *data;
   char i;
 
   for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
@@ -9,11 +10,17 @@ void init_ring_post(char x, char y) {
       entities[i] = EntityRingPost;
 
       r = &entity_data[i];
+      data = (RingPostData *) &r->data.pd;
 
       r->x.hl.h = x;
       r->x.hl.l = 0;
       r->y.hl.h = y;
       r->y.hl.l = 0;
+
+      data->is_top_post = (bool) is_top_post;
+
+      if (is_top_post)
+	top_ring_post_data = r;
 
       return;
     }

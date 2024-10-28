@@ -5,26 +5,6 @@
 
 #pragma rodata-name (push, "PROG0")
 
-/*
-const unsigned char level_test[TILEMAP_SIZE] = {
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-0, 0, 0, 0, 5, 6, 5, 6, 5, 6, 5, 6, 5, 6, 5, 0,
-0, 0, 0, 0, 6, 5, 6, 5, 6, 5, 6, 5, 6, 5, 6, 0,
-0, 0, 0, 0, 5, 6, 5, 6, 5, 6, 5, 6, 0, 0, 0, 0,
-0, 0, 0, 0, 6, 5, 6, 5, 6, 5, 6, 5, 0, 0, 0, 0,
-0, 0, 0, 0, 5, 6, 5, 6, 5, 6, 5, 6, 0, 0, 0, 0,
-0, 0, 0, 0, 6, 5, 6, 5, 6, 5, 6, 5, 0, 0, 0, 0,
-0, 0, 0, 0, 5, 6, 5, 6, 5, 6, 5, 6, 0, 0, 0, 0,
-0, 5, 6, 5, 6, 5, 6, 5, 6, 5, 6, 5, 0, 0, 0, 0,
-0, 6, 5, 6, 5, 6, 5, 6, 5, 6, 5, 6, 0, 0, 0, 0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-*/
-
 #define LEVEL_TEST_MAP_SIZE 512
 
 const unsigned short level_test_map_size = LEVEL_TEST_MAP_SIZE;
@@ -97,8 +77,8 @@ const unsigned char level_test_y_plane[LEVEL_TEST_MAP_SIZE] = {
 };
 
 const unsigned char level_test_entities[] = {
-  EntityRingPost, 80, 52,
-  EntityRingPost, 80, 80,
+  EntityRingPost, 80, 52, 1,
+  EntityRingPost, 80, 52 + RING_POST_GAP, 0,
   EntityPlayer,
   EntityEmpty,
 };

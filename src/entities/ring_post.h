@@ -8,7 +8,7 @@
 #define RING_POST_SIZE 6
 #define RING_POST_HALF_SIZE 3
 
-void init_ring_post(char x, char y);
+void init_ring_post(char x, char y, char is_top_post);
 void move_ring_post(char ix, char x, char y);
 
 // TODO for debugging, rm

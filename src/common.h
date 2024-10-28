@@ -33,6 +33,8 @@
 #define SCORE_ENTRIES 10
 #define SCORE_NAME_LENGTH 10
 
+#define RING_POST_GAP 28
+
 typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 
 #define rand_direction() (rnd() & 3)
@@ -103,14 +105,13 @@ typedef struct PlayerDataT {
   unsigned char d;
 } PlayerData;
 
-typedef struct ScoreEntryDataT {
-  unsigned short score;
-  unsigned char cursor;
-  char entry[SCORE_NAME_LENGTH];
-} ScoreEntryData;
+typedef struct RingPostDataT {
+  bool is_top_post;
+} RingPostData;
 
 typedef union EntityInnerDataU {
   PlayerData pd;
+  RingPostData rpd;
   Empty empty;
 } EntityInnerData;
 
@@ -122,6 +123,7 @@ typedef struct EntityDataT {
 
 extern EntityKind entities[ENTITY_TABLE_SIZE];
 extern EntityData *player_data;
+extern EntityData *top_ring_post_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
 extern void init_game();
 

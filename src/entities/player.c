@@ -60,7 +60,6 @@ void update_player(char ix) {
   EntityData *p;
   PlayerData *data;
 
-  EntityData *other;
   char i;
   signed char c;
 
@@ -166,51 +165,66 @@ void update_player(char ix) {
     data->vy.c *= -1;
   }
 
-  // Check and handle collisions with other entities
-  for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
-    if (i == ix) continue;
-    switch(entities[i]) {
-    case EntityEmpty:
-      // TODO for perf this might be able to break out of the loop entirely
-      // This is the case if we can ensure that empty entities always are at the end of the entity list
-      break;
-    case EntityPlayer:
-      // TODO if (a big if) we add multiplayer there will need to be some relevant logic here
-      break;
-    case EntityRingPost:
-      other = &entity_data[i];
-      if (box_collision(other->x.hl.h,
-			other->x.hl.h + RING_POST_SIZE,
-			  other->y.hl.h,
-			  other->y.hl.h + RING_POST_SIZE,
-			  p->x.hl.h,
-			  p->x.hl.h + PLAYER_SIZE,
-			  p->y.hl.h,
-			  p->y.hl.h + PLAYER_SIZE)) {
-	// We have a collision! To resolve the collision bounce the player back
-	// Despite everything being squares and trig being too slow, we want to emulate a circular collision
+  // Check and handle collisions with ring posts
+  // Ring posts always have the same x value, so we can often elimate both with a single x test
+  if (box_collision_x(top_ring_post_data->x.hl.h,
+		      top_ring_post_data->x.hl.h + RING_POST_SIZE,
+		      p->x.hl.h,
+		      p->x.hl.h + PLAYER_SIZE)) {
+    // First test the top post
+    if (box_collision_y(top_ring_post_data->y.hl.h,
+			top_ring_post_data->y.hl.h + RING_POST_SIZE,
+			p->y.hl.h,
+			p->y.hl.h + PLAYER_SIZE)) {
+      // We have a collision! To resolve the collision bounce the player back
+      // Despite everything being squares and trig being too slow, we want to emulate a circular collision
 
-	// Where is the player wrt the colliding post in the x direction
-	c = (p->x.hl.h + PLAYER_HALF_SIZE) - (other->x.hl.h + RING_POST_HALF_SIZE);
+      // Where is the player wrt the colliding post in the x direction
+      c = (p->x.hl.h + PLAYER_HALF_SIZE) - (top_ring_post_data->x.hl.h + RING_POST_HALF_SIZE);
 
-	// Bounce back against the post in the x direction
-	// If the player is to the left of it and moving right they should be bounced back
-	// Similarly for the other direction
-	// NOTE the values 7 and -7 below were found experimentally
-	if ((data->vx.c < 0 && c >= 7) || (data->vx.c > 0 && c <= -7)) {
-	  p->x.c -= data->vx.c;
-	  data->vx.c *= -1;
-	}
-
-	// The same as the above but in the y direction
-	c = (p->y.hl.h + PLAYER_HALF_SIZE) - (other->y.hl.h + RING_POST_HALF_SIZE);
-
-	if ((data->vy.c < 0 && c >= 7) || (data->vy.c > 0 && c <= -7)) {
-	  p->y.c -= data->vy.c;
-	  data->vy.c *= -1;
-	}
+      // Bounce back against the post in the x direction
+      // If the player is to the left of it and moving right they should be bounced back
+      // Similarly for the other direction
+      // NOTE the values 7 and -7 below were found experimentally
+      if ((data->vx.c < 0 && c >= 7) || (data->vx.c > 0 && c <= -7)) {
+	p->x.c -= data->vx.c;
+	data->vx.c *= -1;
       }
-      break;
+
+      // The same as the above but in the y direction
+      c = (p->y.hl.h + PLAYER_HALF_SIZE) - (top_ring_post_data->y.hl.h + RING_POST_HALF_SIZE);
+
+      if ((data->vy.c < 0 && c >= 7) || (data->vy.c > 0 && c <= -7)) {
+	p->y.c -= data->vy.c;
+	data->vy.c *= -1;
+      }
+    } else if (box_collision_y(top_ring_post_data->y.hl.h + RING_POST_GAP,
+			top_ring_post_data->y.hl.h + RING_POST_SIZE + RING_POST_GAP,
+			p->y.hl.h,
+			p->y.hl.h + PLAYER_SIZE)) {
+      // Colliding with the bottom post
+      // Note above the `else if`. The player cannot collide with both posts at once, this should help eliminate spurious tests
+      // The code which follows is largely similar to the code above, adding a `RING_POST_GAP` where necessary
+
+      // Where is the player wrt the colliding post in the x direction
+      c = (p->x.hl.h + PLAYER_HALF_SIZE) - (top_ring_post_data->x.hl.h + RING_POST_HALF_SIZE);
+
+      // Bounce back against the post in the x direction
+      // If the player is to the left of it and moving right they should be bounced back
+      // Similarly for the other direction
+      // NOTE the values 7 and -7 below were found experimentally
+      if ((data->vx.c < 0 && c >= 7) || (data->vx.c > 0 && c <= -7)) {
+	p->x.c -= data->vx.c;
+	data->vx.c *= -1;
+      }
+
+      // The same as the above but in the y direction
+      c = (p->y.hl.h + PLAYER_HALF_SIZE) - (top_ring_post_data->y.hl.h + RING_POST_HALF_SIZE + RING_POST_GAP);
+
+      if ((data->vy.c < 0 && c >= 7) || (data->vy.c > 0 && c <= -7)) {
+	p->y.c -= data->vy.c;
+	data->vy.c *= -1;
+      }
     }
   }
 
