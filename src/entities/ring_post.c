@@ -1,6 +1,7 @@
 #include "ring_post.h"
 
 #include "../gt/gametank.h"
+#include "../gt/random.h"
 
 #include "../common.h"
 #include "../camera.h"
@@ -24,6 +25,10 @@ void init_ring_post(char x, char y) {
 
       data->mid_x = x + RING_POST_HALF_SIZE;
 
+      // TODO hardcoding for now, but this should be fine
+      data->x_sector = RingPostXMiddle;
+      data->y_sector = RingPostYTop;
+
       ring_post_data = r;
 
       return;
@@ -34,16 +39,102 @@ void init_ring_post(char x, char y) {
 }
 
 
-void move_ring_post(char ix, char x, char y) {
+void move_ring_post(char ix) {
     EntityData *r;
     RingPostData *data;
+    int rand;
 
     r = (EntityData *) &entity_data[ix];
+    data = &r->data.rpd;
 
-    r->x.hl.h = x;
-    r->y.hl.h = y;
+    rand = rnd();
 
-    data->mid_x = x + RING_POST_HALF_SIZE;
+    if (data->x_sector != RingPostXMiddle) {
+      if (rand & 1) {
+	// Case where we keep y_sector the same
+	// We don't need to update the value of `y_sector`
+
+	// We've used one bit of our rand, advance it here
+	rand >>= 1;
+	if (rand & 1) {
+	  // Case where we set x_sector to the middle sector
+	  data->x_sector = RingPostXMiddle;
+	} else {
+	  // Case where we set x_sector to the opposite sector
+	  data->x_sector = (data->x_sector == RingPostXLeft) ? RingPostXRight : RingPostXLeft;
+	}
+      } else {
+	// Case where we flip y_sector
+	data->y_sector = (data->y_sector == RingPostYTop) ? RingPostYBottom : RingPostYTop;
+
+	rand >>= 1;
+	switch (rand & 3) {
+	case 0:
+	case 1:
+	  // Case where we set x_sector to the opposite sector
+	  data->x_sector = (data->x_sector == RingPostXLeft) ? RingPostXRight : RingPostXLeft;
+	  break;
+	case 2:
+	  // Case where we set x_sector to the middle sector
+	  data->x_sector = RingPostXMiddle;
+	  break;
+	case 3:
+	  // Case where we keep x_sector the same
+	  // We don't need to update the value of `x_sector`
+	  break;
+	}
+      }
+    } else {
+      // Case where the ring was in the middle sector
+      // Move to one of (lr x ud) with equal probability
+      switch (rand & 3) {
+      case 0:
+	data->x_sector = RingPostXLeft;
+	data->y_sector = RingPostYTop;
+	break;
+      case 1:
+	data->x_sector = RingPostXLeft;
+	data->y_sector = RingPostYBottom;
+	break;
+      case 2:
+	data->x_sector = RingPostXRight;
+	data->y_sector = RingPostYTop;
+	break;
+      case 3:
+	data->x_sector = RingPostXRight;
+	data->y_sector = RingPostYBottom;
+	break;
+      }
+    }
+
+    // We've used at most 2 bits of yet unaccounted for randomness
+    // and at most 5 bits of total randomness
+    rand >>= 2;
+
+    // TODO expound on the constants below
+    if (data->y_sector == RingPostYTop) {
+      r->y.hl.h = (rand & 31) + 13;
+    } else {
+      r->y.hl.h = (rand & 31) + 45;
+    }
+
+    // We've 5 bits of yet unaccounted for randomness
+    // and at most 10 bits of total randomness
+    rand >> 5;
+
+    switch (data->x_sector) {
+    case RingPostXLeft:
+      r->x.hl.h = (rand & 63) + 28;
+      break;
+    case RingPostXMiddle:
+      r->x.hl.h = (rand & 63) + 28 + 64 + 4;
+      break;
+    case RingPostXRight:
+      r->x.hl.h = (rand & 63) + 28 + 128 + 8;
+      break;
+    }
+
+    data->mid_x = r->x.hl.h + RING_POST_HALF_SIZE;
 }
 
 // TODO for debugging
@@ -51,6 +142,9 @@ void draw_ring_post(char ix) {
   EntityData r;
 
   r = entity_data[ix];
+
+  if ((signed char) (r.x.hl.h - camera_scroll) < 0)
+    return;
 
   *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
   vram[VX] = r.x.hl.h - camera_scroll;
@@ -85,8 +179,7 @@ void update_ring_post(char ix) {
     data = &r->data.rpd;
 
     if (ring_collected) {
-      // TODO replace with random movement
-      move_ring_post(ix, r->x.hl.h + 10, 0x50);
+      move_ring_post(ix);
 
       ring_collected = false;
     }

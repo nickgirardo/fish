@@ -16,8 +16,6 @@
 // Tilemap related definitions
 #define TILE_SIZE 8
 
-#define RING_POST_GAP 28
-
 typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 
 #define rand_direction() (rnd() & 3)
@@ -80,6 +78,8 @@ typedef struct PlayerDataT {
 
 typedef struct RingPostDataT {
   unsigned char mid_x;
+  RingPostXSector x_sector;
+  RingPostYSector y_sector;
 } RingPostData;
 
 typedef union EntityInnerDataU {
