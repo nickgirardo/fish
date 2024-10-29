@@ -87,24 +87,8 @@ void move_ring_post(char ix) {
     } else {
       // Case where the ring was in the middle sector
       // Move to one of (lr x ud) with equal probability
-      switch (rand & 3) {
-      case 0:
-	data->x_sector = RingPostXLeft;
-	data->y_sector = RingPostYTop;
-	break;
-      case 1:
-	data->x_sector = RingPostXLeft;
-	data->y_sector = RingPostYBottom;
-	break;
-      case 2:
-	data->x_sector = RingPostXRight;
-	data->y_sector = RingPostYTop;
-	break;
-      case 3:
-	data->x_sector = RingPostXRight;
-	data->y_sector = RingPostYBottom;
-	break;
-      }
+      data->x_sector = rand & 1;
+      data->y_sector = rand & 2;
     }
 
     // We've used at most 2 bits of yet unaccounted for randomness

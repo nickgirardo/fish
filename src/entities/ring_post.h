@@ -12,13 +12,14 @@
 
 typedef enum RingPostXSectorE {
   RingPostXLeft = 0,
-  RingPostXMiddle,
   RingPostXRight,
+  RingPostXMiddle,
 } RingPostXSector;
 
+// NOTE the weird skipping of 1 here is to allow a micro-optimization
 typedef enum RingPostYSectorE {
   RingPostYTop = 0,
-  RingPostYBottom,
+  RingPostYBottom = 2,
 } RingPostYSector;
 
 void init_ring_post(char x, char y);
