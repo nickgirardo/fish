@@ -1,5 +1,10 @@
 #include "ring_post.h"
 
+#include "../gt/gametank.h"
+
+#include "../common.h"
+#include "../camera.h"
+
 void init_ring_post(char x, char y) {
   EntityData *r;
   RingPostData *data;
@@ -48,7 +53,7 @@ void draw_ring_post(char ix) {
   r = entity_data[ix];
 
   *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
-  vram[VX] = r.x.hl.h;
+  vram[VX] = r.x.hl.h - camera_scroll;
   vram[VY] = r.y.hl.h;
   vram[GX] = 0;
   vram[GY] = 0;
@@ -60,7 +65,7 @@ void draw_ring_post(char ix) {
   wait();
 
   *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
-  vram[VX] = r.x.hl.h;
+  vram[VX] = r.x.hl.h - camera_scroll;
   vram[VY] = r.y.hl.h + RING_POST_GAP;
   vram[GX] = 0;
   vram[GY] = 0;
@@ -79,5 +84,13 @@ void update_ring_post(char ix) {
     r = (EntityData *) &entity_data[ix];
     data = &r->data.rpd;
 
+    if (ring_collected) {
+      // TODO replace with random movement
+      move_ring_post(ix, r->x.hl.h + 10, 0x50);
+
+      ring_collected = false;
+    }
+
     data->mid_x = r->x.hl.h + RING_POST_HALF_SIZE;
+
 }

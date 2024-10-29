@@ -1,19 +1,9 @@
 #include "camera.h"
 
+#include "common.h"
+
 char camera_scroll;
 signed char camera_req_scroll;
-
-void scroll_all_entities(char scroll) {
-  EntityData *entity;
-  unsigned char i;
-
-    for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
-      if (entities[i] == EntityEmpty) continue;
-
-	entity = &entity_data[i];
-	entity->x.hl.h -= scroll;
-    }
-}
 
 void init_camera() {
   camera_scroll = START_SCROLL;
@@ -21,15 +11,9 @@ void init_camera() {
 }
 
 void update_camera() {
-  if (camera_scroll < SCROLLSTOP_RIGHT && camera_req_scroll > 0) {
+  if (camera_scroll < SCROLLSTOP_RIGHT && camera_req_scroll > 0)
     camera_scroll++;
 
-    scroll_all_entities(1);
-  }
-
-  if (camera_scroll > SCROLLSTOP_LEFT && camera_req_scroll < 0) {
+  if (camera_scroll > SCROLLSTOP_LEFT && camera_req_scroll < 0)
     camera_scroll--;
-
-    scroll_all_entities(-1);
-  }
 }

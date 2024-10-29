@@ -1,15 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "../gt/gametank.h"
-#include "../gt/input.h"
-#include "../gt/drawing_funcs.h"
-#include "../common.h"
-
-#include "../camera.h"
-
-#include "ring_post.h"
-
 #define PLAYER_ACCEL 20
 #define PLAYER_MIN_V 0x0010
 #define PLAYER_MIN_V_NEG -0x0010

@@ -1,5 +1,14 @@
 #include "player.h"
 
+#include "../gt/gametank.h"
+#include "../gt/input.h"
+#include "../gt/drawing_funcs.h"
+#include "../common.h"
+
+#include "../camera.h"
+
+#include "ring_post.h"
+
 #pragma code-name (push, "PROG0")
 
 void init_player(char x, char y) {
@@ -27,10 +36,10 @@ void init_player(char x, char y) {
       data->stroke_boost = MAX_STROKE_BOOST;
       data->auto_sink = 0;
 
-      data->r = 0;
-      data->d = 0;
-
+      data->r = x + PLAYER_SIZE;
+      data->d = y + PLAYER_SIZE;
       data->mid_x = x + PLAYER_HALF_SIZE;
+      data->ss_x = x - camera_scroll;
 
       data->is_left_of_ring = true;
 
@@ -51,7 +60,7 @@ void draw_player(char ix) {
   p = entity_data[ix];
 
   *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
-  vram[VX] = p.x.hl.h;
+  vram[VX] = p.x.hl.h - camera_scroll;
   vram[VY] = p.y.hl.h;
   vram[GX] = 0;
   vram[GY] = 0;
@@ -159,11 +168,10 @@ void update_player(char ix) {
   data->r = p->x.hl.h + PLAYER_SIZE;
   data->d = p->y.hl.h + PLAYER_SIZE;
   data->mid_x = p->x.hl.h + PLAYER_HALF_SIZE;
-
-  data->mid_x = p->x.hl.h + PLAYER_HALF_SIZE;
+  data->ss_x = p->x.hl.h - camera_scroll;
 
   // Check and handle collisions with screen borders
-  if (p->x.hl.h < BORDER_LEFT_WIDTH || p->x.hl.h > (SCREEN_WIDTH - BORDER_RIGHT_WIDTH - PLAYER_SIZE)) {
+  if (p->x.hl.h < BORDER_LEFT_WIDTH || data->ss_x >= (SCREEN_WIDTH - BORDER_RIGHT_WIDTH - PLAYER_SIZE)) {
     p->x.c -= data->vx.c;
     data->vx.c *= -1;
   }
@@ -258,10 +266,10 @@ void update_player(char ix) {
 
   // Camera scroll logic
   camera_req_scroll = 0;
-  if (data->vx.c > 0 && p->x.hl.h > CAMERA_SCROLL_START_RIGHT)
+  if (data->vx.c > 0 && data->ss_x > CAMERA_SCROLL_START_RIGHT)
     camera_req_scroll = 1;
 
-  if (data->vx.c < 0 && p->x.hl.h < CAMERA_SCROLL_START_LEFT)
+  if (data->vx.c < 0 && data->ss_x < CAMERA_SCROLL_START_LEFT)
     camera_req_scroll = -1;
 
   PROFILER_END(1);

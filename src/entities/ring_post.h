@@ -1,10 +1,6 @@
 #ifndef RING_POST_H_
 #define RING_POST_H_
 
-#include "../gt/gametank.h"
-
-#include "../common.h"
-
 #define RING_POST_SIZE 6
 #define RING_POST_HALF_SIZE 3
 

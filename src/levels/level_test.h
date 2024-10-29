@@ -77,8 +77,8 @@ const unsigned char level_test_y_plane[LEVEL_TEST_MAP_SIZE] = {
 };
 
 const unsigned char level_test_entities[] = {
-  EntityRingPost, 80, 52,
-  EntityPlayer, 0x20, 0x60,
+  EntityRingPost, 124, 52,
+  EntityPlayer, 0x60, 0x60,
   EntityEmpty,
 };
 

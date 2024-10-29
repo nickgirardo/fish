@@ -75,6 +75,7 @@ typedef struct PlayerDataT {
   unsigned char r;
   unsigned char d;
   unsigned char mid_x;
+  unsigned char ss_x;
 } PlayerData;
 
 typedef struct RingPostDataT {
