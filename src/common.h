@@ -78,7 +78,6 @@ typedef struct PlayerDataT {
 } PlayerData;
 
 typedef struct RingPostDataT {
-  bool is_top_post;
   unsigned char mid_x;
 } RingPostData;
 
@@ -95,9 +94,9 @@ typedef struct EntityDataT {
 } EntityData;
 
 extern EntityKind entities[ENTITY_TABLE_SIZE];
-extern EntityData *player_data;
-extern EntityData *top_ring_post_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
+extern EntityData *player_data;
+extern EntityData *ring_post_data;
 extern bool ring_collected;
 extern void init_game();
 

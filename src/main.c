@@ -24,7 +24,7 @@ EntityData entity_data[ENTITY_TABLE_SIZE];
 
 // Cache pointers to commonly used entities
 EntityData *player_data;
-EntityData *top_ring_post_data;
+EntityData *ring_post_data;
 
 unsigned char current_level;
 
@@ -53,7 +53,7 @@ void init_entities(const unsigned char *data) {
         init_player(*(++data), *(++data));
         break;
       case EntityRingPost:
-        init_ring_post(*(++data), *(++data), *(++data));
+        init_ring_post(*(++data), *(++data));
         break;
       default:
         // We shouldn't ever hit this branch if our levels are crafted correctly

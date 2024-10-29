@@ -1,6 +1,6 @@
 #include "ring_post.h"
 
-void init_ring_post(char x, char y, char is_top_post) {
+void init_ring_post(char x, char y) {
   EntityData *r;
   RingPostData *data;
   char i;
@@ -17,12 +17,9 @@ void init_ring_post(char x, char y, char is_top_post) {
       r->y.hl.h = y;
       r->y.hl.l = 0;
 
-      data->is_top_post = (bool) is_top_post;
-
       data->mid_x = x + RING_POST_HALF_SIZE;
 
-      if (is_top_post)
-	top_ring_post_data = r;
+      ring_post_data = r;
 
       return;
     }
@@ -53,6 +50,18 @@ void draw_ring_post(char ix) {
   *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
   vram[VX] = r.x.hl.h;
   vram[VY] = r.y.hl.h;
+  vram[GX] = 0;
+  vram[GY] = 0;
+  vram[WIDTH] = RING_POST_SIZE;
+  vram[HEIGHT] = RING_POST_SIZE;
+  vram[COLOR] = ~30;
+  vram[START] = 1;
+
+  wait();
+
+  *dma_flags = flagsMirror | DMA_COLORFILL_ENABLE | DMA_OPAQUE;
+  vram[VX] = r.x.hl.h;
+  vram[VY] = r.y.hl.h + RING_POST_GAP;
   vram[GX] = 0;
   vram[GY] = 0;
   vram[WIDTH] = RING_POST_SIZE;
