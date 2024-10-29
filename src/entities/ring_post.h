@@ -11,6 +11,8 @@
 void init_ring_post(char x, char y, char is_top_post);
 void move_ring_post(char ix, char x, char y);
 
+void update_ring_post(char ix);
+
 // TODO for debugging, rm
 void draw_ring_post(char ix);
 

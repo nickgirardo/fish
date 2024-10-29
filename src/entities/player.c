@@ -30,6 +30,12 @@ void init_player(char x, char y) {
       data->r = 0;
       data->d = 0;
 
+      data->mid_x = x + PLAYER_HALF_SIZE;
+
+      data->is_left_of_ring = true;
+
+      data->score = 0;
+
       player_data = p;
 
       return;
@@ -60,7 +66,6 @@ void update_player(char ix) {
   EntityData *p;
   PlayerData *data;
 
-  char i;
   signed char c;
 
   PROFILER_START(1);
@@ -150,9 +155,12 @@ void update_player(char ix) {
   p->x.c += data->vx.c;
   p->y.c += data->vy.c;
 
-  // TODO do we still want to cache these values
+  // Cache common calculated values
   data->r = p->x.hl.h + PLAYER_SIZE;
   data->d = p->y.hl.h + PLAYER_SIZE;
+  data->mid_x = p->x.hl.h + PLAYER_HALF_SIZE;
+
+  data->mid_x = p->x.hl.h + PLAYER_HALF_SIZE;
 
   // Check and handle collisions with screen borders
   if (p->x.hl.h < BORDER_LEFT_WIDTH || p->x.hl.h > (SCREEN_WIDTH - BORDER_RIGHT_WIDTH - PLAYER_SIZE)) {
@@ -180,7 +188,7 @@ void update_player(char ix) {
       // Despite everything being squares and trig being too slow, we want to emulate a circular collision
 
       // Where is the player wrt the colliding post in the x direction
-      c = (p->x.hl.h + PLAYER_HALF_SIZE) - (top_ring_post_data->x.hl.h + RING_POST_HALF_SIZE);
+      c = (p->x.hl.h + PLAYER_HALF_SIZE) - (top_ring_post_data->data.rpd.mid_x);
 
       // Bounce back against the post in the x direction
       // If the player is to the left of it and moving right they should be bounced back
@@ -207,7 +215,7 @@ void update_player(char ix) {
       // The code which follows is largely similar to the code above, adding a `RING_POST_GAP` where necessary
 
       // Where is the player wrt the colliding post in the x direction
-      c = (p->x.hl.h + PLAYER_HALF_SIZE) - (top_ring_post_data->x.hl.h + RING_POST_HALF_SIZE);
+      c = data->mid_x - (top_ring_post_data->data.rpd.mid_x);
 
       // Bounce back against the post in the x direction
       // If the player is to the left of it and moving right they should be bounced back
@@ -227,6 +235,26 @@ void update_player(char ix) {
       }
     }
   }
+
+  // Check if the player has crossed the ring
+  // First we must confirm the player is in the correct y position
+  if (box_collision_y(top_ring_post_data->y.hl.h + RING_POST_SIZE,
+		      top_ring_post_data->y.hl.h + RING_POST_GAP,
+		      p->y.hl.h,
+		      data->d)) {
+    // First clause checks if the player is crossing the ring from the left
+    // Second checks if the player crossing the ring from the right
+    if (((data->mid_x > top_ring_post_data->data.rpd.mid_x) && data->is_left_of_ring) ||
+	((data->mid_x <= top_ring_post_data->data.rpd.mid_x) && !data->is_left_of_ring)) {
+      data->score++;
+      // Mark the ring as collected by this entity
+      ring_collected = ix;
+    }
+  }
+
+  // Update whether the player was to the left or right of the ring
+  // It's important that this follows the crossed ring check!
+  data->is_left_of_ring = (data->mid_x <= top_ring_post_data->data.rpd.mid_x);
 
   // Camera scroll logic
   camera_req_scroll = 0;

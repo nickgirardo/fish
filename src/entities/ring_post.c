@@ -19,6 +19,8 @@ void init_ring_post(char x, char y, char is_top_post) {
 
       data->is_top_post = (bool) is_top_post;
 
+      data->mid_x = x + RING_POST_HALF_SIZE;
+
       if (is_top_post)
 	top_ring_post_data = r;
 
@@ -32,10 +34,14 @@ void init_ring_post(char x, char y, char is_top_post) {
 
 void move_ring_post(char ix, char x, char y) {
     EntityData *r;
+    RingPostData *data;
+
     r = (EntityData *) &entity_data[ix];
 
     r->x.hl.h = x;
     r->y.hl.h = y;
+
+    data->mid_x = x + RING_POST_HALF_SIZE;
 }
 
 // TODO for debugging
@@ -55,4 +61,14 @@ void draw_ring_post(char ix) {
   vram[START] = 1;
 
   wait();
+}
+
+void update_ring_post(char ix) {
+    EntityData *r;
+    RingPostData *data;
+
+    r = (EntityData *) &entity_data[ix];
+    data = &r->data.rpd;
+
+    data->mid_x = r->x.hl.h + RING_POST_HALF_SIZE;
 }

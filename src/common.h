@@ -69,13 +69,17 @@ typedef struct PlayerDataT {
   unsigned char facing;
   unsigned char stroke_boost;
   unsigned char auto_sink;
+  bool is_left_of_ring;
+  char score;
   // Caching these values for faster collision detection
   unsigned char r;
   unsigned char d;
+  unsigned char mid_x;
 } PlayerData;
 
 typedef struct RingPostDataT {
   bool is_top_post;
+  unsigned char mid_x;
 } RingPostData;
 
 typedef union EntityInnerDataU {
@@ -94,6 +98,7 @@ extern EntityKind entities[ENTITY_TABLE_SIZE];
 extern EntityData *player_data;
 extern EntityData *top_ring_post_data;
 extern EntityData entity_data[ENTITY_TABLE_SIZE];
+extern bool ring_collected;
 extern void init_game();
 
 #endif // COMMON_H_

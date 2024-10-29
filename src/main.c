@@ -26,6 +26,8 @@ EntityData entity_data[ENTITY_TABLE_SIZE];
 
 unsigned char current_level;
 
+bool ring_collected;
+
 #define MAX_DEATH_FREEZE 12
 unsigned char death_freeze = 0;
 
@@ -98,7 +100,7 @@ void (*const drawing_fns[])(char) = {
 void (*const update_fns[])(char) = {
   (void (*const)(char))noop,
   update_player,
-  (void (*const)(char))noop,
+  update_ring_post,
 };
 
 int main() {
