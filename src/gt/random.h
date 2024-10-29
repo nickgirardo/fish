@@ -7,6 +7,8 @@
 
 int rnd();
 
+int rnd_weak();
+
 int rnd_range(int low, int high);
 
 #endif

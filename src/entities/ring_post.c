@@ -47,7 +47,7 @@ void move_ring_post(char ix) {
     r = (EntityData *) &entity_data[ix];
     data = &r->data.rpd;
 
-    rand = rnd();
+    rand = rnd_weak();
 
     if (data->x_sector != RingPostXMiddle) {
       if (rand & 1) {
