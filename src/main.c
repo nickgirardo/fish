@@ -13,6 +13,7 @@
 
 #include "entities/player.h"
 #include "entities/ring_post.h"
+#include "entities/locator.h"
 
 #include "levels/level_test.h"
 
@@ -146,6 +147,8 @@ int main() {
       if (entities[i] == EntityEmpty) break;
       drawing_fns[entities[i]](i);
     }
+
+    draw_locator();
 
     await_draw_queue();
     clear_border(0xFF);

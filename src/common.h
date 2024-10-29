@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#include "entities/ring_post.h"
+
 #define ENTITY_TABLE_SIZE 10
 
 #define BORDER_LEFT_WIDTH 8
