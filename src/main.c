@@ -20,16 +20,15 @@
 #include "gen/assets/sfx.h"
 
 EntityKind entities[ENTITY_TABLE_SIZE];
+EntityData entity_data[ENTITY_TABLE_SIZE];
+
+// Cache pointers to commonly used entities
 EntityData *player_data;
 EntityData *top_ring_post_data;
-EntityData entity_data[ENTITY_TABLE_SIZE];
 
 unsigned char current_level;
 
 bool ring_collected;
-
-#define MAX_DEATH_FREEZE 12
-unsigned char death_freeze = 0;
 
 LevelData levels[LEVEL_COUNT];
 
