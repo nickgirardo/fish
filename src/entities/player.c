@@ -3,12 +3,16 @@
 #include "../gt/gametank.h"
 #include "../gt/input.h"
 #include "../gt/drawing_funcs.h"
+#include "../gt/music.h"
+
 #include "../common.h"
 
 #include "../camera.h"
 #include "../util.h"
 
 #include "ring_post.h"
+
+#include "../gen/assets/sfx.h"
 
 #pragma code-name (push, "PROG0")
 
@@ -71,6 +75,12 @@ void draw_player(char ix) {
   vram[START] = 1;
   wait();
 }
+
+#define play_sfx_if_BONK()						\
+  do {									\
+  if (!(data->vx.c < 0x0040 && data->vx.c > -0x0040) || !(data->vx.c < 0x0040 && data->vx.c > -0x0040)) \
+    play_sound_effect(&ASSET__sfx__bonk_bin, SFX_PRIORITY);		\
+  } while(0);
 
 void update_player(char ix) {
   EntityData *p;
@@ -173,11 +183,13 @@ void update_player(char ix) {
 
   // Check and handle collisions with screen borders
   if (p->x.hl.h < BORDER_LEFT_WIDTH || data->ss_x >= (SCREEN_WIDTH - BORDER_RIGHT_WIDTH - PLAYER_SIZE)) {
+    play_sfx_if_BONK();
     p->x.c -= data->vx.c;
     data->vx.c *= -1;
   }
 
   if (p->y.hl.h < BORDER_TOP_HEIGHT || p->y.hl.h > (SCREEN_HEIGHT - BORDER_BOTTOM_HEIGHT - PLAYER_SIZE)) {
+    play_sfx_if_BONK();
     p->y.c -= data->vy.c;
     data->vy.c *= -1;
   }
@@ -192,8 +204,11 @@ void update_player(char ix) {
     if (box_collision_y(ring_post_data->y.hl.h,
 			ring_post_data->y.hl.h + RING_POST_SIZE,
 			p->y.hl.h,
-			data->d)) {
-      // We have a collision! To resolve the collision bounce the player back
+		    data->d)) {
+      // We have a collision!
+      play_sfx_if_BONK();
+
+      // To resolve the collision bounce the player back
       // Despite everything being squares and trig being too slow, we want to emulate a circular collision
 
       // Where is the player wrt the colliding post in the x direction
@@ -220,6 +235,8 @@ void update_player(char ix) {
 			p->y.hl.h,
 			data->d)) {
       // Colliding with the bottom post
+      play_sfx_if_BONK();
+
       // Note above the `else if`. The player cannot collide with both posts at once, this should help eliminate spurious tests
       // The code which follows is largely similar to the code above, adding a `RING_POST_GAP` where necessary
 
@@ -260,7 +277,10 @@ void update_player(char ix) {
     // Second checks if the player crossing the ring from the right
     if (((data->mid_x > ring_post_data->data.rpd.mid_x) && data->is_left_of_ring) ||
 	((data->mid_x <= ring_post_data->data.rpd.mid_x) && !data->is_left_of_ring)) {
+      // Increment score
       data->score = inc_bcd_char(data->score);
+
+      play_sound_effect(&ASSET__sfx__ring_bin, SFX_PRIORITY);
       // Mark the ring as collected by this entity
       ring_collected = ix;
     }

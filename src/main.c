@@ -22,7 +22,6 @@
 #include "levels/level_test.h"
 
 #include "gen/assets/music.h"
-#include "gen/assets/sfx.h"
 
 EntityKind entities[ENTITY_TABLE_SIZE];
 EntityData entity_data[ENTITY_TABLE_SIZE];

@@ -18,6 +18,8 @@
 // Tilemap related definitions
 #define TILE_SIZE 8
 
+#define SFX_PRIORITY 2
+
 typedef enum { DirLeft, DirRight, DirUp, DirDown } Direction;
 
 #define rand_direction() (rnd() & 3)

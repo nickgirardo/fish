@@ -9,6 +9,9 @@
 #define PLAYER_SIZE 12
 #define PLAYER_HALF_SIZE 6
 
+// The absolute speed at which a player must hit an object to play a bonk sfx
+#define BONK_VEL 0x0040
+
 #define MAX_STROKE_BOOST 0x24
 #define MIN_STROKE 0x10
 #define STROKE_INCREMENT 0x03
