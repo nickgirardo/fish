@@ -22,6 +22,7 @@
 #include "levels/level_test.h"
 
 #include "gen/assets/music.h"
+#include "gen/assets/sfx.h"
 
 EntityKind entities[ENTITY_TABLE_SIZE];
 EntityData entity_data[ENTITY_TABLE_SIZE];
@@ -141,6 +142,8 @@ int main() {
 	// Do something
       }
 
+      if (seconds_remaining <= 5)
+	play_sound_effect(&ASSET__sfx__time_bin, SFX_PRIORITY);
       seconds_remaining = dec_bcd_char(seconds_remaining);
       frames_in_seconds_remaining = 60;
 
