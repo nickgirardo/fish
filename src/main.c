@@ -21,6 +21,7 @@
 
 #include "levels/level_test.h"
 
+#include "gen/assets/gfx.h"
 #include "gen/assets/music.h"
 #include "gen/assets/sfx.h"
 
@@ -106,6 +107,8 @@ int main() {
 
   init_graphics();
   load_font(0);
+
+  load_spritesheet(&ASSET__gfx__kelp_bg_bmp, 0);
 
   init_dynawave();
   init_music();
