@@ -7,9 +7,13 @@
 #include "gt/music.h"
 
 #include "common.h"
+#include "util.h"
 
 #include "camera.h"
 #include "tilemap.h"
+
+#include "tilemap.h"
+#include "score_display.h"
 
 #include "entities/player.h"
 #include "entities/ring_post.h"
@@ -30,6 +34,9 @@ EntityData *ring_post_data;
 unsigned char current_level;
 
 bool ring_collected;
+
+char seconds_remaining;
+char frames_in_seconds_remaining;
 
 LevelData levels[LEVEL_COUNT];
 
@@ -63,15 +70,6 @@ void init_entities(const unsigned char *data) {
     }
     data++;
   }
-}
-
-unsigned short inc_bcd(unsigned short n) {
-  if ((n & 0x000F) != 0x0009) return n + 0x0001;
-  if ((n & 0x00F0) != 0x0090) return (n + 0x0010) & 0xFFF0;
-  if ((n & 0x0F00) != 0x0900) return (n + 0x0100) & 0xFF00;
-  if ((n & 0xF000) != 0x9000) return n + 0x1000 & 0xF000;
-
-  return 0x9999;
 }
 
 void init_level() {
@@ -127,6 +125,9 @@ int main() {
 
   init_game();
 
+  frames_in_seconds_remaining = 60;
+  seconds_remaining = 0x20;
+
   // Run forever
   while (1) {
     PROFILER_START(0);
@@ -134,12 +135,26 @@ int main() {
 
     update_inputs();
 
+    // Process timer
+    frames_in_seconds_remaining--;
+    if (frames_in_seconds_remaining == 0) {
+      if (seconds_remaining == 0) {
+	// Do something
+      }
+
+      seconds_remaining = dec_bcd_char(seconds_remaining);
+      frames_in_seconds_remaining = 60;
+
+    }
+
     for (i = 0; i < ENTITY_TABLE_SIZE; i++) {
       if (entities[i] == EntityEmpty) break;
       update_fns[entities[i]](i);
     }
 
     update_camera();
+
+    update_score_display();
 
     draw_tilemap();
 

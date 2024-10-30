@@ -6,6 +6,7 @@
 #include "../common.h"
 
 #include "../camera.h"
+#include "../util.h"
 
 #include "ring_post.h"
 
@@ -254,7 +255,7 @@ void update_player(char ix) {
     // Second checks if the player crossing the ring from the right
     if (((data->mid_x > ring_post_data->data.rpd.mid_x) && data->is_left_of_ring) ||
 	((data->mid_x <= ring_post_data->data.rpd.mid_x) && !data->is_left_of_ring)) {
-      data->score++;
+      data->score = inc_bcd_char(data->score);
       // Mark the ring as collected by this entity
       ring_collected = ix;
     }

@@ -101,6 +101,7 @@ extern EntityData entity_data[ENTITY_TABLE_SIZE];
 extern EntityData *player_data;
 extern EntityData *ring_post_data;
 extern bool ring_collected;
+extern char seconds_remaining;
 extern void init_game();
 
 #endif // COMMON_H_
