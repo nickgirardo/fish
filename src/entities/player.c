@@ -247,10 +247,15 @@ void update_player(char ix) {
 
   // Check if the player has crossed the ring
   // First we must confirm the player is in the correct y position
-  if (box_collision_y(ring_post_data->y.hl.h + RING_POST_SIZE,
-		      ring_post_data->y.hl.h + RING_POST_GAP,
-		      p->y.hl.h,
-		      data->d)) {
+  // TODO for now we're using a full check even though it shouldn't be necessary
+  if (box_collision(ring_post_data->x.hl.h,
+		    ring_post_data->x.hl.h + RING_POST_SIZE,
+		    ring_post_data->y.hl.h + RING_POST_SIZE,
+		    ring_post_data->y.hl.h + RING_POST_GAP,
+		    p->x.hl.h,
+		    data->r,
+		    p->y.hl.h,
+		    data->d)) {
     // First clause checks if the player is crossing the ring from the left
     // Second checks if the player crossing the ring from the right
     if (((data->mid_x > ring_post_data->data.rpd.mid_x) && data->is_left_of_ring) ||
